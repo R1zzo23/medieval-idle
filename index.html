@@ -1,14 +1,17 @@
-<!doctype html>
 <html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="interface.css" />
-        <title>Our Funky HTML Page</title>
-        <meta name="description" content="Our first page">
-        <meta name="keywords" content="html tutorial template">
-    </head>
-    <body>
-        <button type="button" onClick="cookieClick(1)">Add Cookie</button>
-        <span id="cookieCount"></span>
-        <script type="text/javascript" src="main.js"></script>
-    </body>
+	<head>
+		<link rel="stylesheet" type="text/css" href="interface.css" />
+	</head>
+	<body>
+		<button onclick="cookieClick(1)">Click Me!</button>
+		<br />
+		Cookies: <span id="cookieCount">0</span>
+		<br />
+		<button onclick="buyBuilding()">Buy Cursor</button>
+		<br />
+		Cursors: <span id="buildingCount">0</span>
+		<br />
+		Cursor Cost: <span id="buildingCost">10</span>
+		<script type="text/javascript" src="main.js"></script>
+	</body>
 </html>
