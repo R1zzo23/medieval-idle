@@ -16,24 +16,44 @@
 	<body onload="load()">
 		<div class="container">
 			<div class="row">
+				<div class="col-sm-2">
+					<div class="row">
+						<h4>Population</h4>
+					</div>
+					<div class="row">
+						<p>Current:  <span id="currentPopulation"></span></p>
+					</div>
+					<div class="row">
+						<p>Max:  <span id="maxPopulation"></span></p>
+					</div>
+				</div>
+				<div class="col-sm-8" align="center">
+					<h1>The Empire of <span id="empireName"></span></h1>
+				</div>
+				<div class="col-sm-2">
+					<p>Not sure what to put here...</p>
+				</div>
+			</div>
+			<hr style="width:100%", size="3", color=white> 
+			<div class="row">
 				<div class="col-sm-6">
 					<div class="row">
 						<div class="col-sm">
-							<button onclick="cookieClick(1)">Gather Food</button>
+							<button onclick="foodClick(1)">Gather Food</button>
 						</div>
 						<div class="col-sm">
-							Cookies: <span id="cookieCount">0</span>
+							Food: <span id="foodCount">0</span>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-sm">
-							<button onclick="buyBuilding()">Buy Building</button>
+							<button onclick="buyHut()">Buy Building</button>
 						</div>
 						<div class="col-sm">
-							Buildings: <span id="buildingCount">0</span>
+							Huts: <span id="hutCount">0</span>
 						</div>
 						<div class="col-sm">
-							Building Cost: <span id="buildingCost">10</span>
+							Hut Cost: <span id="hutCost">10</span>
 						</div>
 					</div>
 				</div>

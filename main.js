@@ -1,69 +1,86 @@
-var cookies = 0;
-var buildings = 0;
+var empireName = null;
+var food = 0;
+var huts = 0;
 var prestige = 1;
-var buildingCost = 10;
+var hutCost = 10;
+var currentPopulation = 0;
+var maxPopulation = 0;
 
-function cookieClick(number) {
-    cookies += number;
-    document.getElementById("cookieCount").innerHTML = cookies;
+function foodClick(number) {
+    food += number;
+    document.getElementById("foodCount").innerHTML = food;
 }
 
-function buyBuilding(){
-    buildingCost = Math.floor(10 * Math.pow(1.1,buildings));             //works out the cost of this cursor
-    if(cookies >= buildingCost){                                         //checks that the player can afford the cursor
-        buildings++;                                                     //increases number of cursors
-    	cookies -= buildingCost;                                         //removes the cookies spent
-        document.getElementById('buildingCount').innerHTML = buildings;  //updates the number of cursors for the user
-        document.getElementById('cookieCount').innerHTML = cookies;      //updates the number of cookies for the user
+function buyHut(){
+    hutCost = Math.floor(10 * Math.pow(1.1,huts));               //works out the cost of this cursor
+    if(food >= hutCost){                                         //checks that the player can afford the cursor
+        huts++;                                                  //increases number of cursors
+    	food -= hutCost;                                         //removes the food spent
+        document.getElementById('hutCount').innerHTML = huts;    //updates the number of cursors for the user
+        document.getElementById('foodCount').innerHTML = food;   //updates the number of food for the user
     };
-    var nextCost = Math.floor(10 * Math.pow(1.1,buildings));             //works out the cost of the next cursor
-    document.getElementById('buildingCost').innerHTML = nextCost;        //updates the cursor cost for the user
+    var nextCost = Math.floor(10 * Math.pow(1.1,huts));          //works out the cost of the next cursor
+    document.getElementById('hutCost').innerHTML = nextCost;     //updates the cursor cost for the user
 }
 
 window.setInterval(function(){
-    cookieClick(buildings);
+    foodClick(huts);
 }, 1000);
 
 function save() {
     console.log("Saving game to local storage...");
     var save = {
-        cookies: cookies,
-        buildings: buildings,
+        empireName: empireName,
+        food: food,
+        huts: huts,
         prestige: prestige,
-        buildingCost: buildingCost
+        hutCost: hutCost
     }
 
     localStorage.setItem("savedEmpire",JSON.stringify(save));
-    console.log("Save process complete! Cookies = " + cookies + ", buildings = " + buildings + ", prestige = " + prestige);
+    console.log("Save process complete! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
 }
 
 function load() {
     var savedGame = JSON.parse(localStorage.getItem("savedEmpire"));
 
     if (savedGame !== null) {
-        if (typeof savedGame.cookies !== "undefined") cookies = savedGame.cookies;
-        if (typeof savedGame.buildings !== "undefined") buildings = savedGame.buildings;
+        if (typeof savedGame.food !== "undefined") food = savedGame.food;
+        if (typeof savedGame.huts !== "undefined") huts = savedGame.huts;
         if (typeof savedGame.prestige !== "undefined") prestige = savedGame.prestige;
-        if (typeof savedGame.buildingCost !== "undefinted") buildingCost = savedGame.buildingCost;
+        if (typeof savedGame.hutCost !== "undefined") hutCost = savedGame.hutCost;
+        if (typeof savedGame.empireName !== "undefined") empireName = savedGame.empireName;
+        if (typeof savedGame.currentPopulation !== "undefined") currentPopulation = savedGame.currentPopulation;
+        if (typeof savedGame.maxPopulation !== "undefined") maxPopulation = savedGame.maxPopulation;
+        
 
-        console.log("Load process complete! Cookies = " + cookies + ", buildings = " + buildings + ", prestige = " + prestige);
+        console.log("Load process complete! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
 
-        document.getElementById("cookieCount").innerHTML = cookies;
-        document.getElementById("buildingCount").innerHTML = buildings;
-        document.getElementById("buildingCost").innerHTML = buildingCost;
+        updateDocumentElements();
     }
     else {
-        cookies = 0;
-        buildings = 0;
-        buildingCost = 10;
-        document.getElementById("cookieCount").innerHTML = cookies;
-        document.getElementById("buildingCount").innerHTML = buildings;
-        document.getElementById("buildingCost").innerHTML = buildingCost;
+        empireName = prompt("Please enter a name for your empire:");
+        currentPopulation = 0;
+        maxPopulation = 0;
+        food = 0;
+        huts = 0;
+        hutCost = 10;
+        
+        updateDocumentElements();
     }
 }
 
 function restartGame() {
     localStorage.removeItem("savedEmpire");
-    console.log("Save deleted! Cookies = " + cookies + ", buildings = " + buildings + ", prestige = " + prestige);
+    console.log("Save deleted! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
     load();
+}
+
+function updateDocumentElements() {
+    document.getElementById("currentPopulation").innerHTML = currentPopulation;
+    document.getElementById("maxPopulation").innerHTML = maxPopulation;
+    document.getElementById("empireName").innerHTML = empireName;
+    document.getElementById("foodCount").innerHTML = food;
+    document.getElementById("hutCount").innerHTML = huts;
+    document.getElementById("hutCost").innerHTML = hutCost;
 }
