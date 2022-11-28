@@ -2,3 +2,11 @@ body {
     background-color: black;
     color: white;
 }
+
+.resourceButton {  
+    width: 110px;
+}
+
+#buyHut {
+    width: 110px;
+}

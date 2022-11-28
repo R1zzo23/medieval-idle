@@ -1,5 +1,7 @@
 var empireName = null;
 var food = 0;
+var wood = 0;
+var stone = 0;
 var huts = 0;
 var prestige = 1;
 var hutCost = 10;
@@ -32,6 +34,8 @@ function save() {
     var save = {
         empireName: empireName,
         food: food,
+        wood: wood,
+        stone: stone,
         huts: huts,
         prestige: prestige,
         hutCost: hutCost
@@ -46,6 +50,8 @@ function load() {
 
     if (savedGame !== null) {
         if (typeof savedGame.food !== "undefined") food = savedGame.food;
+        if (typeof savedGame.wood !== "undefined") food = savedGame.wood;
+        if (typeof savedGame.stone !== "undefined") food = savedGame.stone;
         if (typeof savedGame.huts !== "undefined") huts = savedGame.huts;
         if (typeof savedGame.prestige !== "undefined") prestige = savedGame.prestige;
         if (typeof savedGame.hutCost !== "undefined") hutCost = savedGame.hutCost;
@@ -63,6 +69,8 @@ function load() {
         currentPopulation = 0;
         maxPopulation = 0;
         food = 0;
+        wood = 0;
+        stone = 0;
         huts = 0;
         hutCost = 10;
         
@@ -81,6 +89,8 @@ function updateDocumentElements() {
     document.getElementById("maxPopulation").innerHTML = maxPopulation;
     document.getElementById("empireName").innerHTML = empireName;
     document.getElementById("foodCount").innerHTML = food;
+    document.getElementById("woodCount").innerHTML = wood;
+    document.getElementById("stoneCount").innerHTML = stone;
     document.getElementById("hutCount").innerHTML = huts;
     document.getElementById("hutCost").innerHTML = hutCost;
 }
