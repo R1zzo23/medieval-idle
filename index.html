@@ -49,7 +49,7 @@
 				</div>
 			</div>
 			<hr style="width:100%", size="3", color=white> 
-			<div class="row">
+			<div class="row row-height">
 				<div class="col-sm-5">
 					<div class="row text-center">
 						<h4>Resources</h4>
@@ -71,31 +71,40 @@
 								<td colspan="2">Needed to build and light fires.</td>
 							</tr>
 							<tr>
-								<td><button class="resourceButton" onclick="stoneClick(1)">Mine Stone</button></td>
+								<td><button class="resourceButton" disabled onclick="stoneClick(1)">Mine Stone</button></td>
 								<td>Stone: <span id="stoneCount">0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Stronger weapons and buildings.</td>
 							</tr>
+							<tr>
+								<td><button class="resourceButton" disabled onclick="goldClick(1)">Mine Gold</button></td>
+								<td>Gold: <span id="goldCount">0</span></td>
+							</tr>
+							<tr>
+								<td colspan="2">Those with the gold make the rules.</td>
+							</tr>
 						</table>
-					</div>
-					<div class="row">
-						<div class="col-sm">
-							<button id="buyHut" onclick="buyHut()">Buy Building</button>
-						</div>
-						<div class="col-sm">
-							Huts: <span id="hutCount">0</span>
-						</div>
-						<div class="col-sm">
-							Hut Cost: <span id="hutCost">10</span>
-						</div>
 					</div>
 				</div>
 				<div class="col-sm">
 					Column 2
 				</div>
-				<div class="col-sm">
-					Column 3
+				<div class="col-sm scrollable">
+					<p id="gameText"></p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="row">
+					<div class="col-sm">
+						<button id="buyHut" onclick="buyHut()">Build Hut</button>
+					</div>
+					<div class="col-sm">
+						Huts: <span id="hutCount">0</span>
+					</div>
+					<div class="col-sm">
+						Cost: <span id="hutCost">10</span> wood
+					</div>
 				</div>
 			</div>
 		</div>

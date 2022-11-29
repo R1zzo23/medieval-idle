@@ -1,6 +1,7 @@
 body {
     background-color: black;
     color: white;
+    font-size: small;
 }
 
 .resourceButton {  
@@ -9,4 +10,18 @@ body {
 
 #buyHut {
     width: 110px;
+}
+
+.scrollable {
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.row-height{
+    height: 250px;
+    background-color: red;
+}
+
+#gameText {
+    font-size: small;
 }
