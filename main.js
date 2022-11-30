@@ -9,6 +9,10 @@ var prestige = 1;
 var hutCost = 10;
 var currentPopulation = 0;
 var maxPopulation = 0;
+var idleFollowers = 0;
+var warriors = 0;
+var workers = 0;
+var newFollowerCountdown = 0;
 var gameText = document.getElementById("gameText");
 
 function advanceTime() {
@@ -27,7 +31,6 @@ function advanceTime() {
         gameText.innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
         + gameText.innerHTML;
     }
-        
 }
 
 function foodClick(number) {
@@ -58,16 +61,59 @@ function buyHut(){
     document.getElementById('hutCost').innerHTML = nextCost;                 //updates the hut cost for the user
 }
 
-window.setInterval(function(){
+function newFollowerTimer() {
+    var random = Math.floor(Math.random() * 10);
+    newFollowerCountdown = timeTick + random;
+    console.log(timeTick + " --> " + newFollowerCountdown);
+}
+
+function newFollower() {
+    currentPopulation++;
+    idleFollowers++;
+    document.getElementById('currentPopulation').innerHTML = currentPopulation;
+    gameText.innerHTML = "A new follower has found their way to " + empireName + "!<br /><br />" + gameText.innerHTML;
+    newFollowerCountdown = 0;
+}
+
+function trainWarrior() {
+    console.log("Training warrior.");
+    warriors++;
+    $("#warriorCount").text(warriors);
+    idleFollowers--;
+    $("#newFollowerCount").text(idleFollowers);
+}
+
+function trainWorker() {
+    console.log("training worker.");
+    workers++;
+    $("#workerCount").text(workers);
+    idleFollowers--;
+    $("#newFollowerCount").text(idleFollowers);
+}
+
+window.setInterval(function(){              // timer that acts as the game engine
     foodClick(huts);
     advanceTime();
+    if (currentPopulation < maxPopulation && newFollowerCountdown == 0) {
+        newFollowerTimer();
+    }
+    if (timeTick == newFollowerCountdown) {
+        newFollower();
+    }
+    if (idleFollowers > 0) {
+        $("#newFollowerCount").text(idleFollowers);
+        $(".newFollowersRow").show();
+    }
+    else {
+        $(".newFollowersRow").hide();
+    }
 }, 1000);
 
 function save() {
     console.log("Saving game to local storage...");
     var save = {
         empireName: empireName,
-        timeTick: tickTick,
+        timeTick: timeTick,
         currentPopulation: currentPopulation,
         maxPopulation: maxPopulation,
         food: food,
@@ -76,7 +122,8 @@ function save() {
         gold: gold,
         huts: huts,
         prestige: prestige,
-        hutCost: hutCost
+        hutCost: hutCost,
+        newFollowerCountdown: newFollowerCountdown
     }
 
     localStorage.setItem("savedEmpire",JSON.stringify(save));
@@ -97,6 +144,7 @@ function load() {
         if (typeof savedGame.timeTick !== "undefined") timeTick = savedGame.timeTick;
         if (typeof savedGame.currentPopulation !== "undefined") currentPopulation = savedGame.currentPopulation;
         if (typeof savedGame.maxPopulation !== "undefined") maxPopulation = savedGame.maxPopulation;
+        if (typeof savedGame.newFollowerCountdown !== "undefined") newFollowerCountdown = savedGame.newFollowerCountdown;
         
 
         console.log("Load process complete! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
@@ -114,6 +162,7 @@ function load() {
         gold = 0;
         huts = 0;
         hutCost = 10;
+        newFollowerCountdown = 0;
         
         updateDocumentElements();
     }
@@ -121,6 +170,7 @@ function load() {
 
 function restartGame() {
     localStorage.removeItem("savedEmpire");
+    gameText.innerHTML = "";
     console.log("Save deleted! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
     load();
 }

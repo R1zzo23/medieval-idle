@@ -1,15 +1,15 @@
 body {
-    background-color: black;
+    background-color: #696868;
     color: white;
     font-size: small;
 }
 
 .resourceButton {  
-    width: 110px;
+    width: 100px;
 }
 
 #buyHut {
-    width: 110px;
+    width: 100px;
 }
 
 .scrollable {
@@ -19,9 +19,8 @@ body {
 
 .row-height{
     height: 250px;
-    background-color: red;
 }
 
 #gameText {
-    font-size: small;
+    font-size: x-small;
 }

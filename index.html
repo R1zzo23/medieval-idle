@@ -21,10 +21,13 @@
 						<h4>Population</h4>
 					</div>
 					<div class="row">
-						<p>Current:  <span id="currentPopulation"></span></p>
+						<p>Current <span id="currentPopulation"></span> | <span id="maxPopulation"></span> Max</p>
 					</div>
 					<div class="row">
-						<p>Max:  <span id="maxPopulation"></span></p>
+						<p>&#9876; <span id="warriorCount">0</span> warriors</p>
+					</div>
+					<div class="row">
+						<p>&#x1F33D; <span id="workerCount">0</span> workers</p>
 					</div>
 				</div>
 				<div class="col-sm-8" align="center">
@@ -58,28 +61,28 @@
 						<table>
 							<tr>
 							  <td><button class="resourceButton" onclick="foodClick(1)">Gather Food</button></td>
-							  <td>Food: <span id="foodCount">0</span></td>
+							  <td>&#129385; <span id="foodCount"> 0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Must have food to survive.</td>
 							</tr>
 							<tr>
 								<td><button class="resourceButton" onclick="woodClick(1)">Chop Wood</button></td>
-								<td>Wood: <span id="woodCount">0</span></td>
+								<td>&#129717; <span id="woodCount">0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Needed to build and light fires.</td>
 							</tr>
 							<tr>
 								<td><button class="resourceButton" disabled onclick="stoneClick(1)">Mine Stone</button></td>
-								<td>Stone: <span id="stoneCount">0</span></td>
+								<td>&#129704; <span id="stoneCount">0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Stronger weapons and buildings.</td>
 							</tr>
 							<tr>
 								<td><button class="resourceButton" disabled onclick="goldClick(1)">Mine Gold</button></td>
-								<td>Gold: <span id="goldCount">0</span></td>
+								<td><img src="gold-bar.png" height="15px" alt="Gold"> <span id="goldCount">0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Those with the gold make the rules.</td>
@@ -88,7 +91,14 @@
 					</div>
 				</div>
 				<div class="col-sm">
-					Column 2
+					<div class="row newFollowersRow">
+						<p>New Followers: <span id="newFollowerCount">0</span></p>
+					</div>
+					<div class="row newFollowersRow">
+						<button id="followerBecomesWarrior" onclick="trainWarrior()">Train Warrior</button>
+						<br />
+						<button id="followerBecomesWorker" onclick="trainWorker()">Train Worker</button>
+					</div>
 				</div>
 				<div class="col-sm scrollable">
 					<p id="gameText"></p>
