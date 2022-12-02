@@ -1,9 +1,14 @@
+//#region Variables
 var empireName = null;
 var timeTick = 0;
 var food = 0;
+var foodLevel = 1;
 var wood = 0;
+var woodLevel = 1;
 var stone = 0;
+var stoneLevel = 1;
 var gold = 0;
+var goldLevel = 1;
 var huts = 0;
 var prestige = 1;
 var hutCost = 10;
@@ -15,23 +20,9 @@ var workers = 0;
 var newFollowerCountdown = 0;
 var gameText = document.getElementById("gameText");
 
-function advanceTime() {
-    timeTick++;
-    if (timeTick == 4) { // Intro flavor text
-        gameText.innerHTML = 
-        "A new empire will be forged by their strong and fearless leader!<br /><br />" 
-        + gameText.innerHTML;
-    }
-    if (timeTick == 8) { // Intro flavor text 2
-        gameText.innerHTML = 
-        "The fate of " + empireName + " is in your hands!<br /><br />" 
-        + gameText.innerHTML;
-    }
-    if (timeTick == 15 && huts == 0) { // aid player into getting started
-        gameText.innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
-        + gameText.innerHTML;
-    }
-}
+//#endregion
+
+//#region Resource Clicks
 
 function foodClick(number) {
     food += number;
@@ -42,6 +33,18 @@ function woodClick(number) {
     wood += number;
     document.getElementById("woodCount").innerHTML = wood;
 }
+
+//#endregion
+
+//#region Resource Consumption
+function calculateFoodConsumption() {
+    food -= workers + (warriors * 3);
+    $(".foodCount").text(food);
+}
+
+//#endregion
+
+//#region Raise Buildings
 
 function buyHut(){
     hutCost = Math.floor(10 * Math.pow(1.1,huts));                           //works out the cost of this hut
@@ -61,6 +64,9 @@ function buyHut(){
     document.getElementById('hutCost').innerHTML = nextCost;                 //updates the hut cost for the user
 }
 
+//#endregion
+
+//#region New Follower --> Warrior or Worker
 function newFollowerTimer() {
     var random = Math.floor(Math.random() * 10);
     newFollowerCountdown = timeTick + random;
@@ -81,6 +87,7 @@ function trainWarrior() {
     $("#warriorCount").text(warriors);
     idleFollowers--;
     $("#newFollowerCount").text(idleFollowers);
+    hideOrShowIdleFollowers();
 }
 
 function trainWorker() {
@@ -89,17 +96,10 @@ function trainWorker() {
     $("#workerCount").text(workers);
     idleFollowers--;
     $("#newFollowerCount").text(idleFollowers);
+    hideOrShowIdleFollowers();
 }
 
-window.setInterval(function(){              // timer that acts as the game engine
-    foodClick(huts);
-    advanceTime();
-    if (currentPopulation < maxPopulation && newFollowerCountdown == 0) {
-        newFollowerTimer();
-    }
-    if (timeTick == newFollowerCountdown) {
-        newFollower();
-    }
+function hideOrShowIdleFollowers() {
     if (idleFollowers > 0) {
         $("#newFollowerCount").text(idleFollowers);
         $(".newFollowersRow").show();
@@ -107,7 +107,47 @@ window.setInterval(function(){              // timer that acts as the game engin
     else {
         $(".newFollowersRow").hide();
     }
+}
+
+//#endregion
+
+//#region Game Engine
+
+window.setInterval(function(){              // timer that acts as the game engine
+    foodClick(workers * (huts + foodLevel));
+    advanceTime();
+    if (currentPopulation < maxPopulation && newFollowerCountdown == 0) {
+        newFollowerTimer();
+    }
+    if (timeTick == newFollowerCountdown) {
+        newFollower();
+    }
+    hideOrShowIdleFollowers();
+    calculateFoodConsumption();
 }, 1000);
+
+
+function advanceTime() {
+    timeTick++;
+    if (timeTick == 4) { // Intro flavor text
+        gameText.innerHTML = 
+        "A new empire will be forged by their strong and fearless leader!<br /><br />" 
+        + gameText.innerHTML;
+    }
+    if (timeTick == 8) { // Intro flavor text 2
+        gameText.innerHTML = 
+        "The fate of " + empireName + " is in your hands!<br /><br />" 
+        + gameText.innerHTML;
+    }
+    if (timeTick == 15 && huts == 0) { // aid player into getting started
+        gameText.innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
+        + gameText.innerHTML;
+    }
+}
+
+//#endregion
+
+//#region Save - Load - Restart
 
 function save() {
     console.log("Saving game to local storage...");
@@ -116,10 +156,16 @@ function save() {
         timeTick: timeTick,
         currentPopulation: currentPopulation,
         maxPopulation: maxPopulation,
+        warriors: warriors,
+        workers: workers,
         food: food,
+        foodLevel: foodLevel,
         wood: wood,
+        woodLevel, woodLevel,
         stone: stone,
+        stoneLevel: stoneLevel,
         gold: gold,
+        goldLevel: goldLevel,
         huts: huts,
         prestige: prestige,
         hutCost: hutCost,
@@ -138,7 +184,13 @@ function load() {
         if (typeof savedGame.wood !== "undefined") wood = savedGame.wood;
         if (typeof savedGame.stone !== "undefined") stone = savedGame.stone;
         if (typeof savedGame.gold !== "undefined") gold = savedGame.gold
+        if (typeof savedGame.foodLevel !== "undefined") foodLevel = savedGame.foodLevel;
+        if (typeof savedGame.woodLevel !== "undefined") woodLevel = savedGame.woodLevel;
+        if (typeof savedGame.stoneLevel !== "undefined") stoneLevel = savedGame.stoneLevel;
+        if (typeof savedGame.goldLevel !== "undefined") goldLevel = savedGame.goldLevel;
         if (typeof savedGame.huts !== "undefined") huts = savedGame.huts;
+        if (typeof savedGame.workers !== "undefined") workers = savedGame.workers
+        if (typeof savedGame.warriors !== "undefined") warriors = savedGame.warriors;
         if (typeof savedGame.hutCost !== "undefined") hutCost = savedGame.hutCost;
         if (typeof savedGame.empireName !== "undefined") empireName = savedGame.empireName;
         if (typeof savedGame.timeTick !== "undefined") timeTick = savedGame.timeTick;
@@ -160,7 +212,13 @@ function load() {
         wood = 0;
         stone = 0;
         gold = 0;
+        foodLevel = 1;
+        woodLevel = 1;
+        stoneLevel = 1;
+        goldLevel = 1;
         huts = 0;
+        workers = 0;
+        warriors = 0;
         hutCost = 10;
         newFollowerCountdown = 0;
         
@@ -176,12 +234,16 @@ function restartGame() {
 }
 
 function updateDocumentElements() {
-    document.getElementById("currentPopulation").innerHTML = currentPopulation;
-    document.getElementById("maxPopulation").innerHTML = maxPopulation;
-    document.getElementById("empireName").innerHTML = empireName;
-    document.getElementById("foodCount").innerHTML = food;
-    document.getElementById("woodCount").innerHTML = wood;
-    document.getElementById("stoneCount").innerHTML = stone;
-    document.getElementById("hutCount").innerHTML = huts;
-    document.getElementById("hutCost").innerHTML = hutCost;
+    $("#currentPopulation").innerHTML = currentPopulation;
+    $("#maxPopulation").innerHTML = maxPopulation;
+    $("#empireName").innerHTML = empireName;
+    $("#foodCount").innerHTML = food;
+    $("#woodCount").innerHTML = wood;
+    $("#stoneCount").innerHTML = stone;
+    $("#hutCount").innerHTML = huts;
+    $("#hutCost").innerHTML = hutCost;
+    $("#warriorCount").text(warriors);
+    $("#workerCount").text(workers);
 }
+
+//#endregion

@@ -4,12 +4,12 @@ body {
     font-size: small;
 }
 
-.resourceButton {  
-    width: 100px;
+.resourceButton, .buildingButton {  
+    width: 90px;
 }
 
 #buyHut {
-    width: 100px;
+    width: 90px;
 }
 
 .scrollable {
@@ -22,5 +22,9 @@ body {
 }
 
 #gameText {
+    font-size: x-small;
+}
+
+button {
     font-size: x-small;
 }
