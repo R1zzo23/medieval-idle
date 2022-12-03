@@ -2,6 +2,7 @@ body {
     background-color: #696868;
     color: white;
     font-size: small;
+    font-weight: 200px;
 }
 
 .resourceButton, .buildingButton {  

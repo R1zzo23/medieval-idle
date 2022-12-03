@@ -1,16 +1,16 @@
 //#region Variables
-var empireName = null;
+var empireName;
 var timeTick = 0;
 var food = 0;
-var foodLevel = 1;
+var foodLevel = 0;
 var wood = 0;
-var woodLevel = 1;
+var woodLevel = 0;
 var stone = 0;
-var stoneLevel = 1;
+var stoneLevel = 0;
 var gold = 0;
-var goldLevel = 1;
+var goldLevel = 0;
 var huts = 0;
-var prestige = 1;
+var armyLevel = 0;
 var hutCost = 10;
 var currentPopulation = 0;
 var maxPopulation = 0;
@@ -19,6 +19,22 @@ var warriors = 0;
 var workers = 0;
 var newFollowerCountdown = 0;
 var gameText = document.getElementById("gameText");
+var lumberUpgrades = [
+    level1 = {
+        name: "Lumber Camp",
+        foodCost: 100,
+        woodCost: 100,
+        stoneCost: 0,
+        goldCost: 0
+    },
+    level2 = {
+        name: "Lumber Mill",
+        foodCost: 150,
+        woodCost: 250,
+        stoneCost: 50,
+        goldCost: 0
+    }
+];
 
 //#endregion
 
@@ -64,11 +80,42 @@ function buyHut(){
     document.getElementById('hutCost').innerHTML = nextCost;                 //updates the hut cost for the user
 }
 
+function upgradeWood() {
+    var nextUpgrade = lumberUpgrades[woodLevel];
+    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost && stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
+        woodLevel++;
+        food -= nextUpgrade.foodCost;
+        wood -= nextUpgrade.woodCost;
+        stone -= nextUpgrade.stoneCost;
+        gold -= nextUpgrade.goldCost;
+        $("#woodLevel").text(woodLevel);
+        displayLumberUpgradeInfo();
+    }
+}
+
+function displayLumberUpgradeInfo() {
+    var nextUpgrade = lumberUpgrades[woodLevel];
+    var costText = "";
+    $("#upgradeWoodBtn").text(nextUpgrade.name);
+
+    if (nextUpgrade.foodCost > 0) 
+        costText += nextUpgrade.foodCost + " food";
+    if (nextUpgrade.woodCost > 0)
+        costText += " | " + nextUpgrade.woodCost + " wood";
+    if (nextUpgrade.stoneCost > 0)
+        costText += " | " + nextUpgrade.stoneCost + " stone";
+    if (nextUpgrade.goldCost > 0)
+        costText += " | " + nextUpgrade.goldCost + " gold";
+
+    $("#woodUpgradeCost").text(costText);
+    updateDocumentElements();
+}
+
 //#endregion
 
 //#region New Follower --> Warrior or Worker
 function newFollowerTimer() {
-    var random = Math.floor(Math.random() * 10);
+    var random = Math.floor(Math.random() * 10);            // change 10 to whatever max number time to wait for new follower to join
     newFollowerCountdown = timeTick + random;
     console.log(timeTick + " --> " + newFollowerCountdown);
 }
@@ -103,6 +150,12 @@ function hideOrShowIdleFollowers() {
     if (idleFollowers > 0) {
         $("#newFollowerCount").text(idleFollowers);
         $(".newFollowersRow").show();
+        if (armyLevel > 0) {
+            $("#followerBecomesWarrior").show();
+        }
+        else {
+            $("#followerBecomesWarrior").hide();
+        }
     }
     else {
         $(".newFollowersRow").hide();
@@ -167,13 +220,11 @@ function save() {
         gold: gold,
         goldLevel: goldLevel,
         huts: huts,
-        prestige: prestige,
         hutCost: hutCost,
         newFollowerCountdown: newFollowerCountdown
     }
 
     localStorage.setItem("savedEmpire",JSON.stringify(save));
-    console.log("Save process complete! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
 }
 
 function load() {
@@ -197,9 +248,6 @@ function load() {
         if (typeof savedGame.currentPopulation !== "undefined") currentPopulation = savedGame.currentPopulation;
         if (typeof savedGame.maxPopulation !== "undefined") maxPopulation = savedGame.maxPopulation;
         if (typeof savedGame.newFollowerCountdown !== "undefined") newFollowerCountdown = savedGame.newFollowerCountdown;
-        
-
-        console.log("Load process complete! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
 
         updateDocumentElements();
     }
@@ -208,42 +256,46 @@ function load() {
         currentPopulation = 0;
         maxPopulation = 0;
         timeTick = 0;
-        food = 0;
-        wood = 0;
-        stone = 0;
-        gold = 0;
-        foodLevel = 1;
-        woodLevel = 1;
-        stoneLevel = 1;
-        goldLevel = 1;
+        food = 1000;
+        wood = 2000;
+        stone = 1000;
+        gold = 1000;
+        foodLevel = 0;
+        woodLevel = 0;
+        stoneLevel = 0;
+        goldLevel = 0;
         huts = 0;
         workers = 0;
         warriors = 0;
         hutCost = 10;
+        idleFollowers = 0;
         newFollowerCountdown = 0;
-        
+        hideOrShowIdleFollowers();
         updateDocumentElements();
     }
+    
+    displayLumberUpgradeInfo();
 }
 
 function restartGame() {
     localStorage.removeItem("savedEmpire");
     gameText.innerHTML = "";
-    console.log("Save deleted! food = " + food + ", huts = " + huts + ", prestige = " + prestige);
     load();
 }
 
 function updateDocumentElements() {
-    $("#currentPopulation").innerHTML = currentPopulation;
-    $("#maxPopulation").innerHTML = maxPopulation;
-    $("#empireName").innerHTML = empireName;
-    $("#foodCount").innerHTML = food;
-    $("#woodCount").innerHTML = wood;
-    $("#stoneCount").innerHTML = stone;
-    $("#hutCount").innerHTML = huts;
-    $("#hutCost").innerHTML = hutCost;
-    $("#warriorCount").text(warriors);
-    $("#workerCount").text(workers);
+    document.getElementById("currentPopulation").innerHTML = currentPopulation;
+    document.getElementById("maxPopulation").innerHTML = maxPopulation;
+    document.getElementById("empireName").innerHTML = empireName;
+    document.getElementById("foodCount").innerHTML = food;
+    document.getElementById("woodCount").innerHTML = wood;
+    document.getElementById("stoneCount").innerHTML = stone;
+    document.getElementById("goldCount").innerHTML = gold;
+    document.getElementById("hutCount").innerHTML = huts;
+    document.getElementById("hutCost").innerHTML = hutCost;
+    document.getElementById("warriorCount").innerHTML = warriors;
+    document.getElementById("workerCount").innerHTML = workers;
+    document.getElementById("woodLevel").innerHTML = woodLevel;
 }
 
 //#endregion
