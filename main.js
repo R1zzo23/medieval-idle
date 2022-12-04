@@ -2,10 +2,14 @@
 var empireName;
 var timeTick = 0;
 var food = 0;
+var foodCooldown = 2;
+var foodTimer = 0;
 var foodLevel = 0;
 var foodEmoji = "&#129385;";
 var maxFoodCapacity = 100;
 var wood = 0;
+var woodCooldown = 3;
+var woodTimer = 0;
 var woodLevel = 0;
 var woodEmoji = "&#129717;";
 var maxWoodCapacity = 100;
@@ -65,6 +69,15 @@ var armyUpgrades = [
 //#endregion
 
 //#region Resource Clicks
+
+function manualClick(resource) {
+    console.log(resource);
+    if (resource == "food") {
+        foodTimer = foodCooldown;
+        console.log("foodTimer = " + foodTimer);
+    }
+    else if (resource == "wood") woodTimer = woodCooldown;
+}
 
 function foodClick(number) {
     food += number;
@@ -252,6 +265,8 @@ window.setInterval(function(){              // timer that acts as the game engin
 
 function advanceTime() {
     timeTick++;
+    foodTimer--;
+    woodTimer--;
     if (timeTick == 4) { // Intro flavor text
         gameText.innerHTML = 
         "A new empire will be forged by their strong and fearless leader!<br /><br />" 
@@ -266,6 +281,10 @@ function advanceTime() {
         gameText.innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
         + gameText.innerHTML;
     }
+    if (foodTimer > 0) $("#foodClickBtn").prop('disabled', true);
+    else $("#foodClickBtn").prop('disabled', false);
+    if (woodTimer > 0) $("#woodClickBtn").prop('disabled', true);
+    else $("#woodClickBtn").prop('disabled', false);
 }
 
 //#endregion
@@ -336,10 +355,10 @@ function load() {
         currentPopulation = 0;
         maxPopulation = 0;
         timeTick = 0;
-        food = 1000;
-        wood = 2000;
-        stone = 1000;
-        gold = 1000;
+        food = 0;
+        wood = 0;
+        stone = 0;
+        gold = 0;
         foodLevel = 0;
         woodLevel = 0;
         stoneLevel = 0;
