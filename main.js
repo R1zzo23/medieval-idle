@@ -3,12 +3,20 @@ var empireName;
 var timeTick = 0;
 var food = 0;
 var foodLevel = 0;
+var foodEmoji = "&#129385;";
+var maxFoodCapacity = 100;
 var wood = 0;
 var woodLevel = 0;
+var woodEmoji = "&#129717;";
+var maxWoodCapacity = 100;
 var stone = 0;
 var stoneLevel = 0;
+var stoneEmoji = "&#129704;";
+var maxStoneCapacity = 0;
 var gold = 0;
 var goldLevel = 0;
+var goldEmoji = "";
+var maxGoldCapacity = 0;
 var huts = 0;
 var armyLevel = 0;
 var hutCost = 10;
@@ -25,14 +33,32 @@ var lumberUpgrades = [
         foodCost: 100,
         woodCost: 100,
         stoneCost: 0,
-        goldCost: 0
+        goldCost: 0,
+        maxCapacity: 250
     },
     level2 = {
         name: "Lumber Mill",
         foodCost: 150,
         woodCost: 250,
         stoneCost: 50,
+        goldCost: 0,
+        maxCapacity: 400
+    }
+];
+var armyUpgrades = [
+    level1 = {
+        name: "Garrison",
+        foodCost: 150,
+        woodCost: 150,
+        stoneCost: 50,
         goldCost: 0
+    },
+    level2 = {
+        name: "Barracks",
+        foodCost: 200,
+        woodCost: 250,
+        stoneCost: 100,
+        goldCost: 25
     }
 ];
 
@@ -42,11 +68,13 @@ var lumberUpgrades = [
 
 function foodClick(number) {
     food += number;
+    if (food > maxFoodCapacity) food = maxFoodCapacity;
     document.getElementById("foodCount").innerHTML = food;
 }
 
 function woodClick(number) {
     wood += number;
+    if (wood > maxWoodCapacity) wood = maxWoodCapacity;
     document.getElementById("woodCount").innerHTML = wood;
 }
 
@@ -80,24 +108,15 @@ function buyHut(){
     document.getElementById('hutCost').innerHTML = nextCost;                 //updates the hut cost for the user
 }
 
-function upgradeWood() {
-    var nextUpgrade = lumberUpgrades[woodLevel];
-    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost && stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
-        woodLevel++;
-        food -= nextUpgrade.foodCost;
-        wood -= nextUpgrade.woodCost;
-        stone -= nextUpgrade.stoneCost;
-        gold -= nextUpgrade.goldCost;
-        $("#woodLevel").text(woodLevel);
-        displayLumberUpgradeInfo();
-    }
+function purchaseUpgrade(nextUpgrade) {
+    food -= nextUpgrade.foodCost;
+    wood -= nextUpgrade.woodCost;
+    stone -= nextUpgrade.stoneCost;
+    gold -= nextUpgrade.goldCost;
 }
 
-function displayLumberUpgradeInfo() {
-    var nextUpgrade = lumberUpgrades[woodLevel];
+function displayNextUpgradeCost(nextUpgrade) {
     var costText = "";
-    $("#upgradeWoodBtn").text(nextUpgrade.name);
-
     if (nextUpgrade.foodCost > 0) 
         costText += nextUpgrade.foodCost + " food";
     if (nextUpgrade.woodCost > 0)
@@ -107,8 +126,55 @@ function displayLumberUpgradeInfo() {
     if (nextUpgrade.goldCost > 0)
         costText += " | " + nextUpgrade.goldCost + " gold";
 
-    $("#woodUpgradeCost").text(costText);
-    updateDocumentElements();
+    return costText;
+}
+
+function upgradeWood() {
+    var nextUpgrade = lumberUpgrades[woodLevel];
+    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost && stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
+        woodLevel++;
+        purchaseUpgrade(nextUpgrade);
+        $("#woodLevel").text(woodLevel);
+        displayLumberUpgradeInfo();
+    }
+}
+
+function displayLumberUpgradeInfo() {
+    if (woodLevel < lumberUpgrades.length) {
+        var nextUpgrade = lumberUpgrades[woodLevel];
+        var costText = displayNextUpgradeCost(nextUpgrade);
+        $("#upgradeWoodBtn").text(nextUpgrade.name);
+        $("#woodUpgradeCost").text(costText);
+        updateDocumentElements();
+    }
+    else {
+        $("#upgradeWoodBtn").prop('disabled', true);
+        $("#woodUpgradeCost").text("No more lumber upgrades.");
+    }
+}
+
+function upgradeArmy() {
+    var nextUpgrade = armyUpgrades[armyLevel];
+    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost && stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
+        armyLevel++;
+        purchaseUpgrade(nextUpgrade);
+        $("#armyLevel").text(armyLevel);
+        displayArmyUpgradeInfo();
+    }
+}
+
+function displayArmyUpgradeInfo() {
+    if (armyLevel < armyUpgrades.length) {
+        var nextUpgrade = armyUpgrades[armyLevel];
+        var costText = displayNextUpgradeCost(nextUpgrade);
+        $("#upgradeArmyBtn").text(nextUpgrade.name);
+        $("#armyUpgradeCost").text(costText);
+        updateDocumentElements();
+    }
+    else {
+        $("#upgradeArmyBtn").prop('disabled', true);
+        $("#armyUpgradeCost").text("No more army upgrades.");
+    }
 }
 
 //#endregion
@@ -131,6 +197,10 @@ function newFollower() {
 function trainWarrior() {
     console.log("Training warrior.");
     warriors++;
+    if (warriors == 1) {                                                     // explain what warriors do for your empire
+        gameText.innerHTML = "Warriors provide much more protection for the empire while consuming more food than workers.<br /><br />"
+        + gameText.innerHTML; 
+    }
     $("#warriorCount").text(warriors);
     idleFollowers--;
     $("#newFollowerCount").text(idleFollowers);
@@ -167,7 +237,7 @@ function hideOrShowIdleFollowers() {
 //#region Game Engine
 
 window.setInterval(function(){              // timer that acts as the game engine
-    foodClick(workers * (huts + foodLevel));
+    foodClick(workers * (Math.floor(huts * .25) + foodLevel + 1));
     advanceTime();
     if (currentPopulation < maxPopulation && newFollowerCountdown == 0) {
         newFollowerTimer();
@@ -219,6 +289,11 @@ function save() {
         stoneLevel: stoneLevel,
         gold: gold,
         goldLevel: goldLevel,
+        maxFoodCapacity: maxFoodCapacity,
+        maxWoodCapacity: maxWoodCapacity,
+        maxStoneCapacity: maxStoneCapacity,
+        maxGoldCapacity: maxGoldCapacity,
+        armyLevel: armyLevel,
         huts: huts,
         hutCost: hutCost,
         newFollowerCountdown: newFollowerCountdown
@@ -239,6 +314,11 @@ function load() {
         if (typeof savedGame.woodLevel !== "undefined") woodLevel = savedGame.woodLevel;
         if (typeof savedGame.stoneLevel !== "undefined") stoneLevel = savedGame.stoneLevel;
         if (typeof savedGame.goldLevel !== "undefined") goldLevel = savedGame.goldLevel;
+        if (typeof savedGame.armyLevel !== "undefined") armyLevel = savedGame.armyLevel;
+        if (typeof savedGame.maxFoodCapacity !== "undefined") maxFoodCapacity = savedGame.maxFoodCapacity;
+        if (typeof savedGame.maxWoodCapacity !== "undefined") maxWoodCapacity = savedGame.maxWoodCapacity;
+        if (typeof savedGame.maxStoneCapacity !== "undefined") maxStoneCapacity = savedGame.maxStoneCapacity;
+        if (typeof savedGame.maxGoldCapacity !== "undefined") maxGoldCapacity = savedGame.maxGoldCapacity;
         if (typeof savedGame.huts !== "undefined") huts = savedGame.huts;
         if (typeof savedGame.workers !== "undefined") workers = savedGame.workers
         if (typeof savedGame.warriors !== "undefined") warriors = savedGame.warriors;
@@ -264,6 +344,11 @@ function load() {
         woodLevel = 0;
         stoneLevel = 0;
         goldLevel = 0;
+        armyLevel = 0;
+        maxFoodCapacity = 100;
+        maxWoodCapacity = 100;
+        maxStoneCapacity = 0;
+        maxGoldCapacity = 0;
         huts = 0;
         workers = 0;
         warriors = 0;
@@ -275,6 +360,7 @@ function load() {
     }
     
     displayLumberUpgradeInfo();
+    displayArmyUpgradeInfo();
 }
 
 function restartGame() {
@@ -296,6 +382,7 @@ function updateDocumentElements() {
     document.getElementById("warriorCount").innerHTML = warriors;
     document.getElementById("workerCount").innerHTML = workers;
     document.getElementById("woodLevel").innerHTML = woodLevel;
+    document.getElementById("armyLevel").innerHTML = armyLevel;
 }
 
 //#endregion
