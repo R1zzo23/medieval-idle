@@ -30,7 +30,7 @@ var idleFollowers = 0;
 var warriors = 0;
 var workers = 0;
 var newFollowerCountdown = 0;
-var gameText = $("#gameText");
+var gameText = $('#gameText');
 var lumberUpgrades = [
     level1 = {
         name: "Lumber Camp",
@@ -120,8 +120,8 @@ function buyHut(){
     if(wood >= hutCost){                                                        //checks that the player can afford the hut
         huts++;                                                                 //increases number of huts
         if (huts == 1) {                                                        //explain what huts do for your empire
-            gameText.innerHTML = "Huts will attract people to your empire and give them a place to call home.<br /><br />"
-            + gameText.innerHTML; 
+            gameText.text("Huts will attract people to your empire and give them a place to call home.<br /><br />"
+            + gameText.text); 
         }
         maxPopulation += 3;                                                     //increase population limit
     	wood -= hutCost;                                                        //removes the food spent
@@ -279,15 +279,19 @@ function advanceTime() {
     foodTimer--;                                                                //decrement food timer
     woodTimer--;                                                                //decrement wood timer
     if (timeTick == 4) {                                                        //Intro flavor text
-        gameText.innerHTML = 
-        "A new empire will be forged by their strong and " 
+        gameText.text("A new empire will be forged by their strong and " 
         + "fearless leader!<br /><br />" 
-        + gameText.innerHTML;
+        + gameText.text);
     }
     if (timeTick == 8) {                                                        //Intro flavor text 2
         gameText.innerHTML = 
         "The fate of " + empireName + " is in your hands!<br /><br />" 
         + gameText.innerHTML;
+    }
+    if (timeTick == 10) {
+        var dragonRoar = new Audio();
+        dragonRoar.src = 'dragon-roar.mp3';
+        dragonRoar.play();
     }
     if (timeTick == 15 && huts == 0) {                                          //aid player into getting started
         gameText.innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
@@ -395,7 +399,7 @@ function load() {                                                               
 
 function restartGame() {                                                        //start a new game
     localStorage.removeItem("savedEmpire");                                     //delete game saved in storage
-    gameText.innerHTML = "";                                                    //reset game text on document
+    gameText.text("");                                                    //reset game text on document
     load();                                                                     //load up new game
 }
 
