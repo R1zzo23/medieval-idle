@@ -30,7 +30,7 @@ var idleFollowers = 0;
 var warriors = 0;
 var workers = 0;
 var newFollowerCountdown = 0;
-var gameText = document.getElementById("gameText");
+var gameText = $("#gameText");
 var lumberUpgrades = [
     level1 = {
         name: "Lumber Camp",
@@ -126,9 +126,9 @@ function buyHut(){
         }
         maxPopulation += 3;                                                     //increase population limit
     	wood -= hutCost;                                                        //removes the food spent
-        document.getElementById('hutCount').innerHTML = huts;                   //updates the number of huts for the user
-        document.getElementById('woodCount').innerHTML = wood;                  //updates the number of wood for the user
-        document.getElementById('maxPopulation').innerHTML = maxPopulation;     // update maxPopulation for user
+        $('hutCount').innerHTML = huts;                   //updates the number of huts for the user
+        $('woodCount').innerHTML = wood;                  //updates the number of wood for the user
+        $('maxPopulation').innerHTML = maxPopulation;     // update maxPopulation for user
     };
     var nextCost = Math.floor(25 * Math.pow(1.1,huts));                         //works out the cost of the next hut
     $('#hutCost').text(nextCost);                                               //updates the hut cost for the user
@@ -208,55 +208,54 @@ function displayArmyUpgradeInfo() {                                             
 //#endregion
 
 //#region New Follower --> Warrior or Worker
-function newFollowerTimer() {
-    var random = Math.floor(Math.random() * 10);            // change 10 to whatever max number time to wait for new follower to join
-    newFollowerCountdown = timeTick + random;
-    console.log(timeTick + " --> " + newFollowerCountdown);
+function newFollowerTimer() {                                                   //create timer for new follower to join
+    var random = Math.floor(Math.random() * 10);                                //random number between 1 and 10
+    newFollowerCountdown = timeTick + random;                                   //set time for new follower
 }
 
-function newFollower() {
-    currentPopulation++;
-    idleFollowers++;
-    document.getElementById('currentPopulation').innerHTML = currentPopulation;
-    gameText.innerHTML = "A new follower has found their way to " + empireName + "!<br /><br />" + gameText.innerHTML;
-    newFollowerCountdown = 0;
+function newFollower() {                                                        //create new follower
+    currentPopulation++;                                                        //add new follower to population   
+    idleFollowers++;                                                            //new follower is idle until trained
+    $('currentPopulation').innerHTML = currentPopulation;                       //show user new population status
+    gameText.innerHTML = "A new follower has found their way to "               //add game text to tell user new follower joined
+    + empireName + "!<br /><br />" + gameText.innerHTML;
+    newFollowerCountdown = 0;                                                   //set countdown to 0 to reset process
 }
 
-function trainWarrior() {
-    console.log("Training warrior.");
-    warriors++;
-    if (warriors == 1) {                                                     // explain what warriors do for your empire
-        gameText.innerHTML = "Warriors provide much more protection for the empire while consuming more food than workers.<br /><br />"
+function trainWarrior() {                                                       //idle follower trains to become warrior
+    warriors++;                                                                 //add 1 to warrior count
+    if (warriors == 1) {                                                        //explain what warriors do for your empire
+        gameText.innerHTML = "Warriors provide much more protection for " +
+        "the empire while consuming more food than workers.<br /><br />"
         + gameText.innerHTML; 
     }
-    $("#warriorCount").text(warriors);
-    idleFollowers--;
-    $("#newFollowerCount").text(idleFollowers);
-    hideOrShowIdleFollowers();
+    $("#warriorCount").text(warriors);                                          //update warrior count to user
+    idleFollowers--;                                                            //remove an idle follower
+    $("#newFollowerCount").text(idleFollowers);                                 //update new follower count to user
+    hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
 }
 
-function trainWorker() {
-    console.log("training worker.");
-    workers++;
-    $("#workerCount").text(workers);
-    idleFollowers--;
-    $("#newFollowerCount").text(idleFollowers);
-    hideOrShowIdleFollowers();
+function trainWorker() {                                                        //idle follower trains to become worker
+    workers++;                                                                  //add 1 to worker count
+    $("#workerCount").text(workers);                                            //update worker count to user
+    idleFollowers--;                                                            //remove an idle follower
+    $("#newFollowerCount").text(idleFollowers);                                 //update new follower count to user
+    hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
 }
 
-function hideOrShowIdleFollowers() {
-    if (idleFollowers > 0) {
+function hideOrShowIdleFollowers() {                                            //decide if idle follower row should be hidden
+    if (idleFollowers > 0) {                                                    //if there are idle followers --> show row
         $("#newFollowerCount").text(idleFollowers);
         $(".newFollowersRow").show();
-        if (armyLevel > 0) {
+        if (armyLevel > 0) {                                                    //if army level > 0, allow training of warriors
             $("#followerBecomesWarrior").show();
         }
-        else {
+        else {                                                                  //if army level = 0, can't train warriors
             $("#followerBecomesWarrior").hide();
         }
     }
     else {
-        $(".newFollowersRow").hide();
+        $(".newFollowersRow").hide();                                           //no idle followers --> hide row
     }
 }
 
@@ -401,20 +400,24 @@ function restartGame() {                                                        
     load();                                                                     //load up new game
 }
 
+$( document ).ready(function() {
+    load();
+});
+
 function updateDocumentElements() {                                             //update document for user to see values
-    document.getElementById("currentPopulation").innerHTML = currentPopulation;
-    document.getElementById("maxPopulation").innerHTML = maxPopulation;
-    document.getElementById("empireName").innerHTML = empireName;
-    document.getElementById("foodCount").innerHTML = food;
-    document.getElementById("woodCount").innerHTML = wood;
-    document.getElementById("stoneCount").innerHTML = stone;
-    document.getElementById("goldCount").innerHTML = gold;
-    document.getElementById("hutCount").innerHTML = huts;
-    document.getElementById("hutCost").innerHTML = hutCost;
-    document.getElementById("warriorCount").innerHTML = warriors;
-    document.getElementById("workerCount").innerHTML = workers;
-    document.getElementById("woodLevel").innerHTML = woodLevel;
-    document.getElementById("armyLevel").innerHTML = armyLevel;
+    $("#currentPopulation").innerHTML = currentPopulation;
+    $("#maxPopulation").innerHTML = maxPopulation;
+    $("#empireName").innerHTML = empireName;
+    $("#foodCount").innerHTML = food;
+    $("#woodCount").innerHTML = wood;
+    $("#stoneCount").innerHTML = stone;
+    $("#goldCount").innerHTML = gold;
+    $("#hutCount").innerHTML = huts;
+    $("#hutCost").innerHTML = hutCost;
+    $("#warriorCount").innerHTML = warriors;
+    $("#workerCount").innerHTML = workers;
+    $("#woodLevel").innerHTML = woodLevel;
+    $("#armyLevel").innerHTML = armyLevel;
 }
 
 //#endregion
