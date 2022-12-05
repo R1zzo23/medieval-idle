@@ -2,13 +2,13 @@
 var empireName;
 var timeTick = 0;
 var food = 0;
-var foodCooldown = 2;
+var foodCooldown = 10;
 var foodTimer = 0;
 var foodLevel = 0;
 var foodEmoji = "&#129385;";
 var maxFoodCapacity = 100;
 var wood = 0;
-var woodCooldown = 3;
+var woodCooldown = 15;
 var woodTimer = 0;
 var woodLevel = 0;
 var woodEmoji = "&#129717;";
@@ -71,7 +71,6 @@ var armyUpgrades = [
 //#region Resource Clicks
 
 function manualClick(resource) {                                                // clicked on resrouce button
-    console.log(resource);
     if (resource == "food") {                                                   // food click
         foodTimer = foodCooldown;                                               // set cooldown for food button
         foodClick();                                                            // run food click
@@ -83,8 +82,8 @@ function manualClick(resource) {                                                
 }
 
 function foodClick() {
-    var foodAdded = workers * (Math.floor(huts * .25) + foodLevel + 2);         // calculate food added
-    if (foodAdded == 0) foodAdded++;                                            // make sure to add something
+    var foodAdded = (workers * (Math.floor(huts * .25) + foodLevel)) * 5;       //calculate food added
+    if (foodAdded == 0) foodAdded += workers * 2;                                   // make sure to add something
     food += foodAdded;                                                          // add food to current stash
     if (food > maxFoodCapacity) food = maxFoodCapacity;                         // cannot exceed capacity
     $("#foodCount").text(food);                                                 // update amount of food to user
@@ -93,7 +92,7 @@ function foodClick() {
 }
 
 function woodClick() {
-    var woodAdded = 1;                                                          // add 1 wood --> needs to calculation
+    var woodAdded = 5;                                                          // add 1 wood --> needs to calculation
     wood += woodAdded;                                                          // add wood to stash
     if (wood > maxWoodCapacity) wood = maxWoodCapacity;                         // cannot exceed capacity
     $('#woodClickBtn').prop('disabled', true);                                  // disable button until cooldown
@@ -126,9 +125,9 @@ function buyHut(){
         }
         maxPopulation += 3;                                                     //increase population limit
     	wood -= hutCost;                                                        //removes the food spent
-        $('hutCount').innerHTML = huts;                   //updates the number of huts for the user
-        $('woodCount').innerHTML = wood;                  //updates the number of wood for the user
-        $('maxPopulation').innerHTML = maxPopulation;     // update maxPopulation for user
+        $('#hutCount').text(huts);                                              //updates the number of huts for the user
+        $('#woodCount').text(wood);                                             //updates the number of wood for the user
+        $('#maxPopulation').text(maxPopulation);                                //update maxPopulation for user
     };
     var nextCost = Math.floor(25 * Math.pow(1.1,huts));                         //works out the cost of the next hut
     $('#hutCost').text(nextCost);                                               //updates the hut cost for the user
@@ -216,7 +215,7 @@ function newFollowerTimer() {                                                   
 function newFollower() {                                                        //create new follower
     currentPopulation++;                                                        //add new follower to population   
     idleFollowers++;                                                            //new follower is idle until trained
-    $('currentPopulation').innerHTML = currentPopulation;                       //show user new population status
+    $('#currentPopulation').text(currentPopulation);                             //show user new population status
     gameText.innerHTML = "A new follower has found their way to "               //add game text to tell user new follower joined
     + empireName + "!<br /><br />" + gameText.innerHTML;
     newFollowerCountdown = 0;                                                   //set countdown to 0 to reset process
@@ -405,19 +404,19 @@ $( document ).ready(function() {
 });
 
 function updateDocumentElements() {                                             //update document for user to see values
-    $("#currentPopulation").innerHTML = currentPopulation;
-    $("#maxPopulation").innerHTML = maxPopulation;
-    $("#empireName").innerHTML = empireName;
-    $("#foodCount").innerHTML = food;
-    $("#woodCount").innerHTML = wood;
-    $("#stoneCount").innerHTML = stone;
-    $("#goldCount").innerHTML = gold;
-    $("#hutCount").innerHTML = huts;
-    $("#hutCost").innerHTML = hutCost;
-    $("#warriorCount").innerHTML = warriors;
-    $("#workerCount").innerHTML = workers;
-    $("#woodLevel").innerHTML = woodLevel;
-    $("#armyLevel").innerHTML = armyLevel;
+    $("#currentPopulation").text(currentPopulation);
+    $("#maxPopulation").text(maxPopulation);
+    $("#empireName").text(empireName);
+    $("#foodCount").text(food);
+    $("#woodCount").text(wood);
+    $("#stoneCount").text(stone);
+    $("#goldCount").text(gold);
+    $("#hutCount").text(huts);
+    $("#hutCost").text(hutCost);
+    $("#warriorCount").text(warriors);
+    $("#workerCount").text(workers);
+    $("#woodLevel").text(woodLevel);
+    $("#armyLevel").text(armyLevel);
 }
 
 //#endregion
