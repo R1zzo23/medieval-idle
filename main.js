@@ -30,7 +30,33 @@ var idleFollowers = 0;
 var warriors = 0;
 var workers = 0;
 var newFollowerCountdown = 0;
-var gameText = $('#gameText');
+var gameText = document.getElementById('gameText');
+var foodUpgrades = [
+    level1 = {
+        name: "Small Silo",
+        foodCost: 100,
+        woodCost: 50,
+        stoneCost: 0,
+        goldCost: 0,
+        maxCapacity: 250
+    },
+    level2 = {
+        name: "Bunker",
+        foodCost: 200,
+        woodCost: 100,
+        stoneCost: 10,
+        goldCost: 0,
+        maxCapacity: 400
+    },
+    level3 = {
+        name: "Large Silo",
+        foodCost: 300,
+        woodCost: 125,
+        stoneCost: 60,
+        goldCost: 0,
+        maxCapacity: 650
+    }
+];
 var lumberUpgrades = [
     level1 = {
         name: "Lumber Camp",
@@ -70,41 +96,41 @@ var armyUpgrades = [
 
 //#region Resource Clicks
 
-function manualClick(resource) {                                                // clicked on resrouce button
-    if (resource == "food") {                                                   // food click
-        foodTimer = foodCooldown;                                               // set cooldown for food button
-        foodClick();                                                            // run food click
+function manualClick(resource) {                                                //clicked on resrouce button
+    if (resource == "food") {                                                   //food click
+        foodTimer = foodCooldown;                                               //set cooldown for food button
+        foodClick();                                                            //run food click
     }
-    else if (resource == "wood") {                                              // wood click
-        woodTimer = woodCooldown;                                               // set cooldown for wood button
-        woodClick();                                                            // run wood click
+    else if (resource == "wood") {                                              //wood click
+        woodTimer = woodCooldown;                                               //set cooldown for wood button
+        woodClick();                                                            //run wood click
     }
 }
 
 function foodClick() {
     var foodAdded = (workers * (Math.floor(huts * .25) + foodLevel)) * 5;       //calculate food added
-    if (foodAdded == 0) foodAdded += workers * 2;                                   // make sure to add something
-    food += foodAdded;                                                          // add food to current stash
-    if (food > maxFoodCapacity) food = maxFoodCapacity;                         // cannot exceed capacity
-    $("#foodCount").text(food);                                                 // update amount of food to user
-    $('#foodClickBtn').prop('disabled', true);                                  // disable button until cooldown
-    calculateFoodConsumption();                                                 // determine how much food is consumed
+    if (foodAdded == 0) foodAdded = workers + 1;                                //make sure to add something
+    food += foodAdded;                                                          //add food to current stash
+    if (food > maxFoodCapacity) food = maxFoodCapacity;                         //cannot exceed capacity
+    $("#foodCount").text(food);                                                 //update amount of food to user
+    $('#foodClickBtn').prop('disabled', true);                                  //disable button until cooldown
+    calculateFoodConsumption();                                                 //determine how much food is consumed
 }
 
 function woodClick() {
-    var woodAdded = 5;                                                          // add 1 wood --> needs to calculation
-    wood += woodAdded;                                                          // add wood to stash
-    if (wood > maxWoodCapacity) wood = maxWoodCapacity;                         // cannot exceed capacity
-    $('#woodClickBtn').prop('disabled', true);                                  // disable button until cooldown
-    $('#woodCount').text(wood);                                                 // dupdate amount of wood to user
+    var woodAdded = 5;                                                          //add 1 wood --> needs to calculation
+    wood += woodAdded;                                                          //add wood to stash
+    if (wood > maxWoodCapacity) wood = maxWoodCapacity;                         //cannot exceed capacity
+    $('#woodClickBtn').prop('disabled', true);                                  //disable button until cooldown
+    $('#woodCount').text(wood);                                                 //dupdate amount of wood to user
 }
 
 //#endregion
 
 //#region Resource Consumption
 function calculateFoodConsumption() {
-    food -= workers + (warriors * 3);                                           // remove food from stash
-    $("#foodCount").text(food);                                                 // update amouhnt of food to user
+    food -= workers + (warriors * 3);                                           //remove food from stash
+    $("#foodCount").text(food);                                                 //update amouhnt of food to user
 }
 
 //#endregion
@@ -114,14 +140,14 @@ function calculateFoodConsumption() {
 function buyHut(){
     var hutCost;
     if (huts == 0) 
-        hutCost = 10;                                                           // first hut cost 10 wood
+        hutCost = 10;                                                           //first hut cost 10 wood
     else 
         hutCost = Math.floor(25 * Math.pow(1.1,huts));                          //works out the cost of this hut
     if(wood >= hutCost){                                                        //checks that the player can afford the hut
         huts++;                                                                 //increases number of huts
         if (huts == 1) {                                                        //explain what huts do for your empire
-            gameText.text("Huts will attract people to your empire and give them a place to call home.<br /><br />"
-            + gameText.text); 
+            document.getElementById('gameText').innerHTML = "Huts will attract people to your empire and give them a place to call home.<br /><br />"
+            + document.getElementById('gameText').innerHTML; 
         }
         maxPopulation += 3;                                                     //increase population limit
     	wood -= hutCost;                                                        //removes the food spent
@@ -152,6 +178,31 @@ function displayNextUpgradeCost(nextUpgrade) {                                  
         costText += " | " + nextUpgrade.goldCost + " gold";
 
     return costText;
+}
+
+function upgradeFood() {                                                        //lumber upgrade
+    var nextUpgrade = foodUpgrades[foodLevel];                                  //determine what the next upgrade is in array
+    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
+        stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
+        foodLevel++;                                                            //increase woodLevel after upgrade
+        purchaseUpgrade(nextUpgrade);                                           //complete purchase
+        $("#foodLevel").text(foodLevel);                                        //update wood level to user
+        displayFoodUpgradeInfo();                                               //show user new upgrade available
+    }
+}
+
+function displayFoodUpgradeInfo() {                                             //show user new upgrade available
+    if (foodLevel < foodUpgrades.length) {                                      //check for another upgrade available
+        var nextUpgrade = foodUpgrades[foodLevel];                              //assign next upgrade from array
+        var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
+        $("#upgradeFoodBtn").text(nextUpgrade.name);                            //give button name of next upgrade as text
+        $("#foodUpgradeCost").text(costText);                                   //display cost of next upgrade to user
+        updateDocumentElements();                                               //update document for user
+    }
+    else {
+        $("#upgradeFoodBtn").prop('disabled', true);                            //disable button if no upgrade available
+        $("#foodUpgradeCost").text("No more food upgrades.");                   //tell user no available upgrades
+    }
 }
 
 function upgradeWood() {                                                        //lumber upgrade
@@ -215,18 +266,18 @@ function newFollowerTimer() {                                                   
 function newFollower() {                                                        //create new follower
     currentPopulation++;                                                        //add new follower to population   
     idleFollowers++;                                                            //new follower is idle until trained
-    $('#currentPopulation').text(currentPopulation);                             //show user new population status
-    gameText.innerHTML = "A new follower has found their way to "               //add game text to tell user new follower joined
-    + empireName + "!<br /><br />" + gameText.innerHTML;
+    $('#currentPopulation').text(currentPopulation);                            //show user new population status
+    document.getElementById('gameText').innerHTML = "A new follower has found their way to "               //add game text to tell user new follower joined
+    + empireName + "!<br /><br />" + document.getElementById('gameText').innerHTML;
     newFollowerCountdown = 0;                                                   //set countdown to 0 to reset process
 }
 
 function trainWarrior() {                                                       //idle follower trains to become warrior
     warriors++;                                                                 //add 1 to warrior count
     if (warriors == 1) {                                                        //explain what warriors do for your empire
-        gameText.innerHTML = "Warriors provide much more protection for " +
+        document.getElementById('gameText').innerHTML = "Warriors provide much more protection for " +
         "the empire while consuming more food than workers.<br /><br />"
-        + gameText.innerHTML; 
+        + document.getElementById('gameText').innerHTML; 
     }
     $("#warriorCount").text(warriors);                                          //update warrior count to user
     idleFollowers--;                                                            //remove an idle follower
@@ -279,23 +330,25 @@ function advanceTime() {
     foodTimer--;                                                                //decrement food timer
     woodTimer--;                                                                //decrement wood timer
     if (timeTick == 4) {                                                        //Intro flavor text
-        gameText.text("A new empire will be forged by their strong and " 
+        document.getElementById('gameText').innerHTML = "A new empire will be forged by their strong and " 
         + "fearless leader!<br /><br />" 
-        + gameText.text);
+        + document.getElementById('gameText').innerHTML;
     }
     if (timeTick == 8) {                                                        //Intro flavor text 2
-        gameText.innerHTML = 
+        document.getElementById('gameText').innerHTML = 
         "The fate of " + empireName + " is in your hands!<br /><br />" 
-        + gameText.innerHTML;
+        + document.getElementById('gameText').innerHTML;
     }
-    if (timeTick == 10) {
+    if (timeTick == 50) {
         var dragonRoar = new Audio();
         dragonRoar.src = 'dragon-roar.mp3';
         dragonRoar.play();
+        document.getElementById('gameText').innerHTML = "The sound of a ferocious and massive dragon " 
+        + "can be heard off in the distance.<br /><br />" + document.getElementById('gameText').innerHTML; 
     }
     if (timeTick == 15 && huts == 0) {                                          //aid player into getting started
-        gameText.innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
-        + gameText.innerHTML;
+        document.getElementById('gameText').innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
+        + document.getElementById('gameText').innerHTML;
     }
     if (foodTimer > 0) $("#foodClickBtn").prop('disabled', true);               //disable food button if not cooled down
     else $("#foodClickBtn").prop('disabled', false);
@@ -392,14 +445,14 @@ function load() {                                                               
         hideOrShowIdleFollowers();                                              //determine to hide or show idle follower section
         updateDocumentElements();                                               //update document for user to see values
     }
-    
+    displayFoodUpgradeInfo();
     displayLumberUpgradeInfo();                                                 //show user lumber upgrade
     displayArmyUpgradeInfo();                                                   //show user army upgrade
 }
 
 function restartGame() {                                                        //start a new game
     localStorage.removeItem("savedEmpire");                                     //delete game saved in storage
-    gameText.text("");                                                    //reset game text on document
+    document.getElementById('gameText').innerHTML = "";                         //reset game text on document
     load();                                                                     //load up new game
 }
 
