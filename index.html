@@ -81,14 +81,14 @@
 								<td colspan="2">Needed to build and light fires.</td>
 							</tr>
 							<tr>
-								<td><button class="resourceButton" disabled onclick="stoneClick(1)">Mine Stone</button></td>
+								<td><button class="resourceButton" id="stoneClickBtn" disabled onclick="manualClick('stone')">Mine Stone</button></td>
 								<td>&#129704; <span id="stoneCount">0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Stronger weapons and buildings.</td>
 							</tr>
 							<tr>
-								<td><button class="resourceButton" disabled onclick="goldClick(1)">Mine Gold</button></td>
+								<td><button class="resourceButton" id="goldClickBtn" disabled onclick="manualClick('gold')">Mine Gold</button></td>
 								<td><img src="gold-bar.png" height="15px" alt="Gold"> <span id="goldCount">0</span></td>
 							</tr>
 							<tr>
@@ -127,7 +127,7 @@
 							</tr>
 							<tr>
 								<td><button class="buildingButton" id="upgradeFoodBtn" onclick="upgradeFood()">Test</button></td>
-								<td>&#129683; Level<span id="foodLevel"> 0</span></td>
+								<td>&#x1F33D; Level<span id="foodLevel"> 0</span></td>
 							</tr>
 							<tr>
 								<td colspan="2">Cost: <span id="foodUpgradeCost">10</span></tr>
@@ -137,7 +137,14 @@
 								<td>&#129683; Level<span id="woodLevel"> 0</span></td>
 							</tr>
 							<tr>
-								<td colspan="2">Cost: <span id="woodUpgradeCost">10</span> &#129717;</tr>
+								<td colspan="2">Cost: <span id="woodUpgradeCost">10</span></tr>
+							</tr>
+							<tr>
+								<td><button class="buildingButton" id="upgradeMiningBtn" onclick="upgradeMining()">Test</button></td>
+								<td>&#9935; Level<span id="miningLevel"> 0</span></td>
+							</tr>
+							<tr>
+								<td colspan="2">Cost: <span id="miningUpgradeCost">10</span></tr>
 							</tr>
 							<tr>
 								<td><button class="buildingButton" id="upgradeArmyBtn" onclick="upgradeArmy()">Test</button></td>

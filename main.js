@@ -1,24 +1,29 @@
 //#region Variables
 var empireName;
 var timeTick = 0;
+var eatingTimer = 8;                                                                //everyone eats 3 times per day
+var nightFireTimer = 24;                                                            //all living spaces need fire at night
 var food = 0;
-var foodCooldown = 10;
+var foodCooldown = 5;
 var foodTimer = 0;
 var foodLevel = 0;
 var foodEmoji = "&#129385;";
 var maxFoodCapacity = 100;
 var wood = 0;
-var woodCooldown = 15;
+var woodCooldown = 5;
 var woodTimer = 0;
 var woodLevel = 0;
 var woodEmoji = "&#129717;";
 var maxWoodCapacity = 100;
+var miningLevel = 0;
 var stone = 0;
-var stoneLevel = 0;
+var stoneTimer = 0;
+var stoneCooldown = 25;
 var stoneEmoji = "&#129704;";
 var maxStoneCapacity = 0;
 var gold = 0;
-var goldLevel = 0;
+var goldTimer = 0;
+var goldCooldown = 35;
 var goldEmoji = "";
 var maxGoldCapacity = 0;
 var huts = 0;
@@ -91,6 +96,26 @@ var armyUpgrades = [
         goldCost: 25
     }
 ];
+var miningUpgrades = [
+    level1 = {
+        name: "Small Mine",
+        foodCost: 95,
+        woodCost: 175,
+        stoneCost: 0,
+        goldCost: 0,
+        maxStoneCapacity: 100,
+        maxGoldCapacity: 50
+    },
+    level2 = {
+        name: "Large Mine",
+        foodCost: 275,
+        woodCost: 350,
+        stoneCost: 90,
+        goldCost: 40,
+        maxStoneCapacity: 250,
+        maxGoldCapacity: 125
+    }
+];
 
 //#endregion
 
@@ -105,24 +130,41 @@ function manualClick(resource) {                                                
         woodTimer = woodCooldown;                                               //set cooldown for wood button
         woodClick();                                                            //run wood click
     }
+    else if (resource == "stone") {
+        stoneTimer = stoneCooldown;
+        stoneClick();
+    }
+    else if (resource == "gold") {
+        goldTimer = goldCooldown;
+        goldClick();
+    }
 }
 
 function foodClick() {
-    var foodAdded = (workers * (Math.floor(huts * .25) + foodLevel)) * 5;       //calculate food added
+    var foodAdded = (workers * (1 + (Math.floor(huts * .25) + foodLevel))) * 10;//calculate food added
     if (foodAdded == 0) foodAdded = workers + 1;                                //make sure to add something
     food += foodAdded;                                                          //add food to current stash
     if (food > maxFoodCapacity) food = maxFoodCapacity;                         //cannot exceed capacity
     $("#foodCount").text(food);                                                 //update amount of food to user
     $('#foodClickBtn').prop('disabled', true);                                  //disable button until cooldown
-    calculateFoodConsumption();                                                 //determine how much food is consumed
 }
 
 function woodClick() {
-    var woodAdded = 5;                                                          //add 1 wood --> needs to calculation
+    var woodAdded = (workers * (1 + woodLevel)) * 7;                            //add 1 wood --> needs to calculation
     wood += woodAdded;                                                          //add wood to stash
     if (wood > maxWoodCapacity) wood = maxWoodCapacity;                         //cannot exceed capacity
     $('#woodClickBtn').prop('disabled', true);                                  //disable button until cooldown
     $('#woodCount').text(wood);                                                 //dupdate amount of wood to user
+}
+
+function stoneClick() {
+    stone += Math.round(workers / 3);
+    $('#stoneCount').text(stone);
+}
+
+function goldClick() {
+    gold += Math.round(workers / 5);
+    $('#goldCount').text(gold);
 }
 
 //#endregion
@@ -131,6 +173,14 @@ function woodClick() {
 function calculateFoodConsumption() {
     food -= workers + (warriors * 3);                                           //remove food from stash
     $("#foodCount").text(food);                                                 //update amouhnt of food to user
+}
+
+function calculateFireWoodUsage() {
+    var woodUsage = 0;
+    woodUsage += huts * 3;
+    woodUsage += armyLevel * 5;
+    wood -= woodUsage;
+    $("#woodCount").text(wood);
 }
 
 //#endregion
@@ -188,6 +238,7 @@ function upgradeFood() {                                                        
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
         $("#foodLevel").text(foodLevel);                                        //update wood level to user
         displayFoodUpgradeInfo();                                               //show user new upgrade available
+        maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
     }
 }
 
@@ -213,6 +264,7 @@ function upgradeWood() {                                                        
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
         $("#woodLevel").text(woodLevel);                                        //update wood level to user
         displayLumberUpgradeInfo();                                             //show user new upgrade available
+        maxWoodCapacity = nextUpgrade.maxCapacity                               //update max capacity for this resource
     }
 }
 
@@ -227,6 +279,36 @@ function displayLumberUpgradeInfo() {                                           
     else {
         $("#upgradeWoodBtn").prop('disabled', true);                            //disable button if no upgrade available
         $("#woodUpgradeCost").text("No more lumber upgrades.");                 //tell user no available upgrades
+    }
+}
+
+function upgradeMining() {                                                      //mining upgrade
+    var nextUpgrade = miningUpgrades[miningLevel];                              //determine what the next upgrade is in array
+    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
+        stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
+        miningLevel++;                                                          //increase miningLevel after upgrade
+        purchaseUpgrade(nextUpgrade);                                           //complete purchase
+        $("#miningLevel").text(miningLevel);                                    //update mining level to user
+        displayMiningUpgradeInfo();                                             //show user new upgrade available
+        maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
+    }
+    if (miningLevel > 0) {
+        $('#stoneClickBtn').prop('disabled', false);
+        $('#goldClickBtn').prop('disabled', false);
+    }
+}
+
+function displayMiningUpgradeInfo() {                                           //show user new upgrade available
+    if (miningLevel < miningUpgrades.length) {                                  //check for another upgrade available
+        var nextUpgrade = miningUpgrades[miningLevel];                          //assign next upgrade from array
+        var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
+        $("#upgradeMiningBtn").text(nextUpgrade.name);                          //give button name of next upgrade as text
+        $("#miningUpgradeCost").text(costText);                                 //display cost of next upgrade to user
+        updateDocumentElements();                                               //update document for user
+    }
+    else {
+        $("#upgradeMiningBtn").prop('disabled', true);                          //disable button if no upgrade available
+        $("#miningUpgradeCost").text("No more mining upgrades.");               //tell user no available upgrades
     }
 }
 
@@ -322,6 +404,16 @@ window.setInterval(function(){                                                  
         newFollower();                                                          //run new follower function
     }
     hideOrShowIdleFollowers();                                                  //decide to hide or show new follower section
+    eatingTimer--;
+    if (eatingTimer == 0) {
+        calculateFoodConsumption();                                             //determine how much food is consumed
+        eatingTimer = 8;
+    }
+    nightFireTimer--;
+    if (nightFireTimer == 0) {
+        calculateFireWoodUsage();
+        nightFireTimer = 24;
+    }
 }, 1000);                                                                       //1000 = 1 second
 
 
@@ -329,6 +421,8 @@ function advanceTime() {
     timeTick++;                                                                 //advance time in universe
     foodTimer--;                                                                //decrement food timer
     woodTimer--;                                                                //decrement wood timer
+    stoneTimer--;                                                               //decrement stone timer
+    goldTimer--;                                                                //decrement gold timer
     if (timeTick == 4) {                                                        //Intro flavor text
         document.getElementById('gameText').innerHTML = "A new empire will be forged by their strong and " 
         + "fearless leader!<br /><br />" 
@@ -354,6 +448,10 @@ function advanceTime() {
     else $("#foodClickBtn").prop('disabled', false);
     if (woodTimer > 0) $("#woodClickBtn").prop('disabled', true);               //disable wood button if not cooled down
     else $("#woodClickBtn").prop('disabled', false);
+    if (stoneTimer > 0) $("#stoneClickBtn").prop('disabled', true);             //disable stone button if not cooled down
+    else $("#stoneClickBtn").prop('disabled', false);
+    if (goldTimer > 0) $("#goldClickBtn").prop('disabled', true);               //disable gold button if not cooled down
+    else $("#goldClickBtn").prop('disabled', false);
 }
 
 //#endregion
@@ -373,9 +471,8 @@ function save() {                                                               
         wood: wood,
         woodLevel, woodLevel,
         stone: stone,
-        stoneLevel: stoneLevel,
+        miningLevel: miningLevel,
         gold: gold,
-        goldLevel: goldLevel,
         maxFoodCapacity: maxFoodCapacity,
         maxWoodCapacity: maxWoodCapacity,
         maxStoneCapacity: maxStoneCapacity,
@@ -399,8 +496,7 @@ function load() {                                                               
         if (typeof savedGame.gold !== "undefined") gold = savedGame.gold
         if (typeof savedGame.foodLevel !== "undefined") foodLevel = savedGame.foodLevel;
         if (typeof savedGame.woodLevel !== "undefined") woodLevel = savedGame.woodLevel;
-        if (typeof savedGame.stoneLevel !== "undefined") stoneLevel = savedGame.stoneLevel;
-        if (typeof savedGame.goldLevel !== "undefined") goldLevel = savedGame.goldLevel;
+        if (typeof savedGame.miningLevel !== "undefined") miningLevel = savedGame.miningLevel
         if (typeof savedGame.armyLevel !== "undefined") armyLevel = savedGame.armyLevel;
         if (typeof savedGame.maxFoodCapacity !== "undefined") maxFoodCapacity = savedGame.maxFoodCapacity;
         if (typeof savedGame.maxWoodCapacity !== "undefined") maxWoodCapacity = savedGame.maxWoodCapacity;
@@ -429,8 +525,7 @@ function load() {                                                               
         gold = 0;
         foodLevel = 0;
         woodLevel = 0;
-        stoneLevel = 0;
-        goldLevel = 0;
+        miningLevel = 0;
         armyLevel = 0;
         maxFoodCapacity = 100;
         maxWoodCapacity = 100;
@@ -445,8 +540,9 @@ function load() {                                                               
         hideOrShowIdleFollowers();                                              //determine to hide or show idle follower section
         updateDocumentElements();                                               //update document for user to see values
     }
-    displayFoodUpgradeInfo();
+    displayFoodUpgradeInfo();                                                   //show user food upgrade
     displayLumberUpgradeInfo();                                                 //show user lumber upgrade
+    displayMiningUpgradeInfo();                                                 //show user mining upgrade
     displayArmyUpgradeInfo();                                                   //show user army upgrade
 }
 
@@ -474,6 +570,7 @@ function updateDocumentElements() {                                             
     $("#workerCount").text(workers);
     $("#woodLevel").text(woodLevel);
     $("#armyLevel").text(armyLevel);
+    $("#miningLevel").text(miningLevel);
 }
 
 //#endregion
