@@ -130,13 +130,13 @@ function manualClick(resource) {                                                
         woodTimer = woodCooldown;                                               //set cooldown for wood button
         woodClick();                                                            //run wood click
     }
-    else if (resource == "stone") {
-        stoneTimer = stoneCooldown;
-        stoneClick();
+    else if (resource == "stone") {                                             //stone click   
+        stoneTimer = stoneCooldown;                                             //set cooldown for stone button
+        stoneClick();                                                           //run stone click
     }
-    else if (resource == "gold") {
-        goldTimer = goldCooldown;
-        goldClick();
+    else if (resource == "gold") {                                              //gold click
+        goldTimer = goldCooldown;                                               //set cooldown for gold button
+        goldClick();                                                            //run gold click
     }
 }
 
@@ -160,11 +160,13 @@ function woodClick() {
 function stoneClick() {
     stone += Math.round(workers / 3);
     $('#stoneCount').text(stone);
+    $('#stoneClickBtn').prop('disabled', true);                                 //disable button until cooldown
 }
 
 function goldClick() {
     gold += Math.round(workers / 5);
     $('#goldCount').text(gold);
+    $('#goldClickBtn').prop('disabled', true);                                  //disable button until cooldown
 }
 
 //#endregion
@@ -239,6 +241,7 @@ function upgradeFood() {                                                        
         $("#foodLevel").text(foodLevel);                                        //update wood level to user
         displayFoodUpgradeInfo();                                               //show user new upgrade available
         maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
+
     }
 }
 
@@ -482,7 +485,6 @@ function save() {                                                               
         hutCost: hutCost,
         newFollowerCountdown: newFollowerCountdown
     }
-
     localStorage.setItem("savedEmpire",JSON.stringify(save));                   //change save game into JSON for local storage
 }
 
