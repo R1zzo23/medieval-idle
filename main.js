@@ -299,6 +299,10 @@ function upgradeMining() {                                                      
         $('#stoneClickBtn').prop('disabled', false);
         $('#goldClickBtn').prop('disabled', false);
     }
+    else if (miningLevel == 0) {
+        $('#stoneClickBtn').prop('disabled', true);
+        $('#goldClickBtn').prop('disabled', true);
+    }
 }
 
 function displayMiningUpgradeInfo() {                                           //show user new upgrade available
