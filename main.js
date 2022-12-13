@@ -1,6 +1,10 @@
 //#region Variables
-var empireName;
-var timeTick = 0;
+window.empireName;
+window.timeTick = 0;
+var userEmpire;
+var empire1;
+var empire2;
+var empire3;
 var eatingTimer = 8;                                                                //everyone eats 3 times per day
 var nightFireTimer = 24;                                                            //all living spaces need fire at night
 var food = 0;
@@ -9,7 +13,7 @@ var foodTimer = 0;
 var foodLevel = 0;
 var foodEmoji = "&#129385;";
 var maxFoodCapacity = 100;
-var wood = 0;
+window.wood = 0;
 var woodCooldown = 5;
 var woodTimer = 0;
 var woodLevel = 0;
@@ -37,84 +41,21 @@ var workers = 0;
 var newFollowerCountdown = 0;
 var gameText = document.getElementById('gameText');
 var foodUpgrades = [
-    level1 = {
-        name: "Small Silo",
-        foodCost: 100,
-        woodCost: 50,
-        stoneCost: 0,
-        goldCost: 0,
-        maxCapacity: 250
-    },
-    level2 = {
-        name: "Bunker",
-        foodCost: 200,
-        woodCost: 100,
-        stoneCost: 10,
-        goldCost: 0,
-        maxCapacity: 400
-    },
-    level3 = {
-        name: "Large Silo",
-        foodCost: 300,
-        woodCost: 125,
-        stoneCost: 60,
-        goldCost: 0,
-        maxCapacity: 650
-    }
+    level1 = new Building("Small Silo", 100, 50, 0, 0, 250, 0, 0, 0, 0),
+    level2 = new Building("Bunker", 200, 100, 10, 0, 400, 0, 0, 0, 0),
+    level3 = new Building("Large Silo", 300, 125, 60, 0, 650, 0, 0, 0, 0) 
 ];
 var lumberUpgrades = [
-    level1 = {
-        name: "Lumber Camp",
-        foodCost: 100,
-        woodCost: 100,
-        stoneCost: 0,
-        goldCost: 0,
-        maxCapacity: 250
-    },
-    level2 = {
-        name: "Lumber Mill",
-        foodCost: 150,
-        woodCost: 250,
-        stoneCost: 50,
-        goldCost: 0,
-        maxCapacity: 400
-    }
+    level1 = new Building("Lumber Camp", 100, 200, 0, 0, 0, 250, 0, 0, 0),
+    level2 = new Building("Lumber Mill", 250, 250, 50, 0, 0, 400, 0, 0, 0)
 ];
 var armyUpgrades = [
-    level1 = {
-        name: "Garrison",
-        foodCost: 150,
-        woodCost: 150,
-        stoneCost: 50,
-        goldCost: 0
-    },
-    level2 = {
-        name: "Barracks",
-        foodCost: 200,
-        woodCost: 250,
-        stoneCost: 100,
-        goldCost: 25
-    }
+    level1 = new Building("Garrison", 150, 150, 50, 0, 0, 0, 0, 0, 0),
+    level2 = new Building("Barracks", 200, 250, 100, 25, 0, 0, 0, 0, 0)
 ];
 var miningUpgrades = [
-    level1 = {
-        name: "Small Mine",
-        foodCost: 95,
-        woodCost: 175,
-        stoneCost: 0,
-        goldCost: 0,
-        maxStoneCapacity: 100,
-        maxGoldCapacity: 50
-    },
-    level2 = {
-        name: "Large Mine",
-        foodCost: 275,
-        woodCost: 350,
-        stoneCost: 90,
-        goldCost: 40,
-        maxStoneCapacity: 250,
-        maxGoldCapacity: 125
-    }
+    level1 = new Building("Small Mine", 95, 175, 0, 0, 0, 0, 100, 50, 0),
+    level2 = new Building("Large Mine", 275, 350, 90, 40, 0, 0, 250, 125, 0)
 ];
 
 //#endregion
@@ -522,27 +463,28 @@ function load() {                                                               
     }
     else {                                                                      //no save in storage
         empireName = prompt("Please enter a name for your empire:");            //name your empire --> needs check for character
-        currentPopulation = 0;                                                  //set variables at starting levels
-        maxPopulation = 0;
+        userEmpire = new Empire(empireName);
+        userEmpire.currentPopulation = 0;                                                  //set variables at starting levels
+        userEmpire.maxPopulation = 0;
         timeTick = 0;
-        food = 0;
-        wood = 10;
-        stone = 0;
-        gold = 0;
-        foodLevel = 0;
-        woodLevel = 0;
-        miningLevel = 0;
-        armyLevel = 0;
-        maxFoodCapacity = 100;
-        maxWoodCapacity = 100;
-        maxStoneCapacity = 0;
-        maxGoldCapacity = 0;
-        huts = 0;
-        workers = 0;
-        warriors = 0;
-        hutCost = 10;
-        idleFollowers = 0;
-        newFollowerCountdown = 0;
+        userEmpire.food = 0;
+        userEmpire.wood = 10;
+        userEmpire.stone = 0;
+        userEmpire.gold = 0;
+        userEmpire.foodLevel = 0;
+        userEmpire.woodLevel = 0;
+        userEmpire.miningLevel = 0;
+        userEmpire.armyLevel = 0;
+        userEmpire.maxFoodCapacity = 100;
+        userEmpire.maxWoodCapacity = 100;
+        userEmpire.maxStoneCapacity = 0;
+        userEmpire.maxGoldCapacity = 0;
+        userEmpire.huts = 0;
+        userEmpire.workers = 0;
+        userEmpire.warriors = 0;
+        userEmpire.hutCost = 10;
+        userEmpire.idleFollowers = 0;
+        userEmpire.newFollowerCountdown = 0;
         hideOrShowIdleFollowers();                                              //determine to hide or show idle follower section
         updateDocumentElements();                                               //update document for user to see values
     }
@@ -550,6 +492,13 @@ function load() {                                                               
     displayLumberUpgradeInfo();                                                 //show user lumber upgrade
     displayMiningUpgradeInfo();                                                 //show user mining upgrade
     displayArmyUpgradeInfo();                                                   //show user army upgrade
+    console.log(userEmpire);
+    empire1 = new Empire("Mordor");
+    empire1.displayData();
+    empire2 = new Empire("Revere");
+    empire2.displayData();
+    empire3 = new Empire("Babylon");
+    empire3.displayData();
 }
 
 function restartGame() {                                                        //start a new game
