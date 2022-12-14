@@ -9,10 +9,16 @@ class Empire {
         this.woodLevel = 0;
         this.miningLevel = 0;
         this.armyLevel = 0;
-        this.currentPopulation = 1;
-        this.maxPopulation = 1;
+        this.currentPopulation = 0;
+        this.maxPopulation = 0;
+        this.idleFollowers = 0;
         this.warriorCount = 0;
-        this.workerCount = 1;
+        this.workerCount = 0;
+        this.huts = 0;
+        this.maxFoodCapacity = 100;
+        this.maxWoodCapacity = 100;
+        this.maxStoneCapacity = 0;
+        this.maxGoldCapacity = 0;
 
         this.displayData = () => {
             console.log("The Empire of " + this.name + " has resources of " + 

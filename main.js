@@ -1,5 +1,5 @@
 //#region Variables
-window.empireName;
+//window.empireName;
 window.timeTick = 0;
 var userEmpire;
 var empire1;
@@ -7,37 +7,37 @@ var empire2;
 var empire3;
 var eatingTimer = 8;                                                                //everyone eats 3 times per day
 var nightFireTimer = 24;                                                            //all living spaces need fire at night
-var food = 0;
+//var food = 0;
 var foodCooldown = 5;
 var foodTimer = 0;
-var foodLevel = 0;
+//var foodLevel = 0;
 var foodEmoji = "&#129385;";
-var maxFoodCapacity = 100;
-window.wood = 0;
+//var maxFoodCapacity = 100;
+//window.wood = 0;
 var woodCooldown = 5;
 var woodTimer = 0;
-var woodLevel = 0;
+//var woodLevel = 0;
 var woodEmoji = "&#129717;";
-var maxWoodCapacity = 100;
-var miningLevel = 0;
-var stone = 0;
+//var maxWoodCapacity = 100;
+//var miningLevel = 0;
+//var stone = 0;
 var stoneTimer = 0;
 var stoneCooldown = 25;
 var stoneEmoji = "&#129704;";
-var maxStoneCapacity = 0;
-var gold = 0;
+//var maxStoneCapacity = 0;
+//var gold = 0;
 var goldTimer = 0;
 var goldCooldown = 35;
 var goldEmoji = "";
-var maxGoldCapacity = 0;
-var huts = 0;
-var armyLevel = 0;
-var hutCost = 10;
-var currentPopulation = 0;
-var maxPopulation = 0;
-var idleFollowers = 0;
-var warriors = 0;
-var workers = 0;
+//var maxGoldCapacity = 0;
+//var userEmpire.huts = 0;
+//var armyLevel = 0;
+//var hutCost = 10;
+//var currentPopulation = 0;
+//var maxPopulation = 0;
+//var userEmpire.idleFollowers = 0;
+//var warriors = 0;
+//var workers = 0;
 var newFollowerCountdown = 0;
 var gameText = document.getElementById('gameText');
 var foodUpgrades = [
@@ -79,34 +79,35 @@ function manualClick(resource) {                                                
         goldTimer = goldCooldown;                                               //set cooldown for gold button
         goldClick();                                                            //run gold click
     }
+    activateUpgradeButtons();
 }
 
 function foodClick() {
-    var foodAdded = (workers * (1 + (Math.floor(huts * .25) + foodLevel))) * 10;//calculate food added
-    if (foodAdded == 0) foodAdded = workers + 1;                                //make sure to add something
-    food += foodAdded;                                                          //add food to current stash
-    if (food > maxFoodCapacity) food = maxFoodCapacity;                         //cannot exceed capacity
-    $("#foodCount").text(food);                                                 //update amount of food to user
+    var foodAdded = (userEmpire.workers * (1 + (Math.floor(userEmpire.huts * .25) + userEmpire.foodLevel))) * 10;//calculate food added
+    if (foodAdded == 0) foodAdded = userEmpire.workers + 1;                                //make sure to add something
+    userEmpire.food += foodAdded;                                                          //add food to current stash
+    if (userEmpire.food > userEmpire.maxFoodCapacity) userEmpire.food = userEmpire.maxFoodCapacity;                         //cannot exceed capacity
+    $("#foodCount").text(userEmpire.food);                                                 //update amount of food to user
     $('#foodClickBtn').prop('disabled', true);                                  //disable button until cooldown
 }
 
 function woodClick() {
-    var woodAdded = (workers * (1 + woodLevel)) * 7;                            //add 1 wood --> needs to calculation
-    wood += woodAdded;                                                          //add wood to stash
-    if (wood > maxWoodCapacity) wood = maxWoodCapacity;                         //cannot exceed capacity
+    var woodAdded = (userEmpire.workers * (1 + userEmpire.woodLevel)) * 7;                            //add 1 wood --> needs to calculation
+    userEmpire.wood += woodAdded;                                                          //add wood to stash
+    if (userEmpire.wood > userEmpire.maxWoodCapacity) userEmpire.wood = userEmpire.maxWoodCapacity;                         //cannot exceed capacity
     $('#woodClickBtn').prop('disabled', true);                                  //disable button until cooldown
-    $('#woodCount').text(wood);                                                 //dupdate amount of wood to user
+    $('#woodCount').text(userEmpire.wood);                                                 //dupdate amount of wood to user
 }
 
 function stoneClick() {
-    stone += Math.round(workers / 3);
-    $('#stoneCount').text(stone);
+    userEmpire.stone += Math.round(userEmpire.workers / 3);
+    $('#stoneCount').text(userEmpire.stone);
     $('#stoneClickBtn').prop('disabled', true);                                 //disable button until cooldown
 }
 
 function goldClick() {
-    gold += Math.round(workers / 5);
-    $('#goldCount').text(gold);
+    userEmpire.gold += Math.round(userEmpire.workers / 5);
+    $('#goldCount').text(userEmpire.gold);
     $('#goldClickBtn').prop('disabled', true);                                  //disable button until cooldown
 }
 
@@ -114,16 +115,18 @@ function goldClick() {
 
 //#region Resource Consumption
 function calculateFoodConsumption() {
-    food -= workers + (warriors * 3);                                           //remove food from stash
-    $("#foodCount").text(food);                                                 //update amouhnt of food to user
+    userEmpire.food -= userEmpire.workers + (userEmpire.warriors * 3);                                           //remove food from stash
+    $("#foodCount").text(userEmpire.food);                                                 //update amouhnt of food to user
+    activateUpgradeButtons()
 }
 
 function calculateFireWoodUsage() {
     var woodUsage = 0;
-    woodUsage += huts * 3;
-    woodUsage += armyLevel * 5;
-    wood -= woodUsage;
-    $("#woodCount").text(wood);
+    woodUsage += userEmpire.huts * 3;
+    woodUsage += userEmpire.armyLevel * 5;
+    userEmpire.wood -= woodUsage;
+    $("#woodCount").text(userEmpire.wood);
+    activateUpgradeButtons();
 }
 
 //#endregion
@@ -132,31 +135,31 @@ function calculateFireWoodUsage() {
 
 function buyHut(){
     var hutCost;
-    if (huts == 0) 
+    if (userEmpire.huts == 0) 
         hutCost = 10;                                                           //first hut cost 10 wood
     else 
-        hutCost = Math.floor(25 * Math.pow(1.1,huts));                          //works out the cost of this hut
-    if(wood >= hutCost){                                                        //checks that the player can afford the hut
-        huts++;                                                                 //increases number of huts
-        if (huts == 1) {                                                        //explain what huts do for your empire
-            document.getElementById('gameText').innerHTML = "Huts will attract people to your empire and give them a place to call home.<br /><br />"
+        hutCost = Math.floor(25 * Math.pow(1.1,userEmpire.huts));                          //works out the cost of this hut
+    if(userEmpire.wood >= hutCost){                                                        //checks that the player can afford the hut
+        userEmpire.huts++;                                                                 //increases number of userEmpire.huts
+        if (userEmpire.huts == 1) {                                                        //explain what userEmpire.huts do for your empire
+            document.getElementById('gameText').innerHTML = "userEmpire.huts will attract people to your empire and give them a place to call home.<br /><br />"
             + document.getElementById('gameText').innerHTML; 
         }
-        maxPopulation += 3;                                                     //increase population limit
-    	wood -= hutCost;                                                        //removes the food spent
-        $('#hutCount').text(huts);                                              //updates the number of huts for the user
-        $('#woodCount').text(wood);                                             //updates the number of wood for the user
-        $('#maxPopulation').text(maxPopulation);                                //update maxPopulation for user
+        userEmpire.maxPopulation += 3;                                                     //increase population limit
+    	userEmpire.wood -= hutCost;                                                        //removes the food spent
+        $('#hutCount').text(userEmpire.huts);                                              //updates the number of userEmpire.huts for the user
+        $('#woodCount').text(userEmpire.wood);                                             //updates the number of wood for the user
+        $('#maxPopulation').text(userEmpire.maxPopulation);                                //update maxPopulation for user
     };
-    var nextCost = Math.floor(25 * Math.pow(1.1,huts));                         //works out the cost of the next hut
+    var nextCost = Math.floor(25 * Math.pow(1.1,userEmpire.huts));                         //works out the cost of the next hut
     $('#hutCost').text(nextCost);                                               //updates the hut cost for the user
 }
 
 function purchaseUpgrade(nextUpgrade) {                                         //removes resources after buying upgrade
-    food -= nextUpgrade.foodCost;                                       
-    wood -= nextUpgrade.woodCost;
-    stone -= nextUpgrade.stoneCost;
-    gold -= nextUpgrade.goldCost;
+    userEmpire.food -= nextUpgrade.foodCost;                                       
+    userEmpire.wood -= nextUpgrade.woodCost;
+    userEmpire.stone -= nextUpgrade.stoneCost;
+    userEmpire.gold -= nextUpgrade.goldCost;
 }
 
 function displayNextUpgradeCost(nextUpgrade) {                                  //shows user cost for upgrades
@@ -174,21 +177,44 @@ function displayNextUpgradeCost(nextUpgrade) {                                  
 }
 
 function upgradeFood() {                                                        //lumber upgrade
-    var nextUpgrade = foodUpgrades[foodLevel];                                  //determine what the next upgrade is in array
-    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
-        stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
-        foodLevel++;                                                            //increase woodLevel after upgrade
+    var nextUpgrade = foodUpgrades[userEmpire.foodLevel];                                  //determine what the next upgrade is in array
+    if (userEmpire.food >= nextUpgrade.foodCost && userEmpire.wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
+    userEmpire.stone >= nextUpgrade.stoneCost && userEmpire.gold >= nextUpgrade.goldCost) {
+        userEmpire.foodLevel++;                                                            //increase woodLevel after upgrade
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
-        $("#foodLevel").text(foodLevel);                                        //update wood level to user
+        $("#foodLevel").text(userEmpire.foodLevel);                                        //update wood level to user
         displayFoodUpgradeInfo();                                               //show user new upgrade available
-        maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
+        userEmpire.maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
 
     }
 }
 
+function activateUpgradeButtons() {
+    if (canAffordUpgrade(foodUpgrades[userEmpire.foodLevel]))
+        $("#upgradeFoodBtn").prop('disabled', false);
+    else $("#upgradeFoodBtn").prop('disabled', true);
+    if (canAffordUpgrade(lumberUpgrades[userEmpire.woodLevel]))
+        $("#upgradeWoodBtn").prop('disabled', false);
+    else $("#upgradeWoodBtn").prop('disabled', true);
+    if (canAffordUpgrade(miningUpgrades[userEmpire.miningLevel]))
+        $("#upgradeMiningBtn").prop('disabled', false);
+    else $("#upgradeMiningBtn").prop('disabled', true);
+    if (canAffordUpgrade(armyUpgrades[userEmpire.armyLevel]))
+        $("#upgradeArmyBtn").prop('disabled', false);
+    else $("#upgradeArmyBtn").prop('disabled', true);
+}
+
+function canAffordUpgrade(nextUpgrade) {
+    if (userEmpire.food >= nextUpgrade.foodCost && userEmpire.wood >= 
+        nextUpgrade.woodCost && userEmpire.stone >= nextUpgrade.stoneCost &&
+        userEmpire.gold >= nextUpgrade.goldCost) {
+            return true;
+        }
+    else return false;
+}
 function displayFoodUpgradeInfo() {                                             //show user new upgrade available
-    if (foodLevel < foodUpgrades.length) {                                      //check for another upgrade available
-        var nextUpgrade = foodUpgrades[foodLevel];                              //assign next upgrade from array
+    if (userEmpire.foodLevel < foodUpgrades.length) {                                      //check for another upgrade available
+        var nextUpgrade = foodUpgrades[userEmpire.foodLevel];                              //assign next upgrade from array
         var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
         $("#upgradeFoodBtn").text(nextUpgrade.name);                            //give button name of next upgrade as text
         $("#foodUpgradeCost").text(costText);                                   //display cost of next upgrade to user
@@ -201,20 +227,20 @@ function displayFoodUpgradeInfo() {                                             
 }
 
 function upgradeWood() {                                                        //lumber upgrade
-    var nextUpgrade = lumberUpgrades[woodLevel];                                //determine what the next upgrade is in array
-    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
-        stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
-        woodLevel++;                                                            //increase woodLevel after upgrade
+    var nextUpgrade = lumberUpgrades[userEmpire.woodLevel];                                //determine what the next upgrade is in array
+    if (userEmpire.food >= nextUpgrade.foodCost && userEmpire.wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
+    userEmpire.stone >= nextUpgrade.stoneCost && userEmpire.gold >= nextUpgrade.goldCost) {
+        userEmpire.woodLevel++;                                                            //increase woodLevel after upgrade
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
-        $("#woodLevel").text(woodLevel);                                        //update wood level to user
+        $("#woodLevel").text(userEmpire.woodLevel);                                        //update wood level to user
         displayLumberUpgradeInfo();                                             //show user new upgrade available
-        maxWoodCapacity = nextUpgrade.maxCapacity                               //update max capacity for this resource
+        userEmpire.maxWoodCapacity = nextUpgrade.maxCapacity                               //update max capacity for this resource
     }
 }
 
 function displayLumberUpgradeInfo() {                                           //show user new upgrade available
-    if (woodLevel < lumberUpgrades.length) {                                    //check for another upgrade available
-        var nextUpgrade = lumberUpgrades[woodLevel];                            //assign next upgrade from array
+    if (userEmpire.woodLevel < lumberUpgrades.length) {                                    //check for another upgrade available
+        var nextUpgrade = lumberUpgrades[userEmpire.woodLevel];                            //assign next upgrade from array
         var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
         $("#upgradeWoodBtn").text(nextUpgrade.name);                            //give button name of next upgrade as text
         $("#woodUpgradeCost").text(costText);                                   //display cost of next upgrade to user
@@ -227,20 +253,20 @@ function displayLumberUpgradeInfo() {                                           
 }
 
 function upgradeMining() {                                                      //mining upgrade
-    var nextUpgrade = miningUpgrades[miningLevel];                              //determine what the next upgrade is in array
-    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
-        stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {
-        miningLevel++;                                                          //increase miningLevel after upgrade
+    var nextUpgrade = miningUpgrades[userEmpire.miningLevel];                              //determine what the next upgrade is in array
+    if (userEmpire.food >= nextUpgrade.foodCost && userEmpire.wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
+    userEmpire.stone >= nextUpgrade.stoneCost && userEmpire.gold >= nextUpgrade.goldCost) {
+        userEmpire.miningLevel++;                                                          //increase miningLevel after upgrade
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
-        $("#miningLevel").text(miningLevel);                                    //update mining level to user
+        $("#miningLevel").text(userEmpire.miningLevel);                                    //update mining level to user
         displayMiningUpgradeInfo();                                             //show user new upgrade available
-        maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
+        userEmpire.maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
     }
-    if (miningLevel > 0) {
+    if (userEmpire.miningLevel > 0) {
         $('#stoneClickBtn').prop('disabled', false);
         $('#goldClickBtn').prop('disabled', false);
     }
-    else if (miningLevel == 0) {
+    else if (userEmpire.miningLevel == 0) {
         $('#stoneClickBtn').prop('disabled', true);
         $('#goldClickBtn').prop('disabled', true);
     }
@@ -248,7 +274,7 @@ function upgradeMining() {                                                      
 
 function displayMiningUpgradeInfo() {                                           //show user new upgrade available
     if (miningLevel < miningUpgrades.length) {                                  //check for another upgrade available
-        var nextUpgrade = miningUpgrades[miningLevel];                          //assign next upgrade from array
+        var nextUpgrade = miningUpgrades[userEmpire.miningLevel];                          //assign next upgrade from array
         var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
         $("#upgradeMiningBtn").text(nextUpgrade.name);                          //give button name of next upgrade as text
         $("#miningUpgradeCost").text(costText);                                 //display cost of next upgrade to user
@@ -261,19 +287,19 @@ function displayMiningUpgradeInfo() {                                           
 }
 
 function upgradeArmy() {                                                        //army upgrade
-    var nextUpgrade = armyUpgrades[armyLevel];                                  //determine what the next upgrade is in array
-    if (food >= nextUpgrade.foodCost && wood >= nextUpgrade.woodCost && 
-        stone >= nextUpgrade.stoneCost && gold >= nextUpgrade.goldCost) {       
-        armyLevel++;                                                            //increase armyLevel after upgrade
+    var nextUpgrade = armyUpgrades[userEmpire.armyLevel];                                  //determine what the next upgrade is in array
+    if (userEmpire.food >= nextUpgrade.foodCost && userEmpire.wood >= nextUpgrade.woodCost && 
+        userEmpire.stone >= nextUpgrade.stoneCost && userEmpire.gold >= nextUpgrade.goldCost) {       
+            userEmpire.armyLevel++;                                                            //increase armyLevel after upgrade
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
-        $("#armyLevel").text(armyLevel);                                        //update army level to user
+        $("#armyLevel").text(userEmpire.armyLevel);                                        //update army level to user
         displayArmyUpgradeInfo();                                               //show user new upgrade available
     }
 }
 
 function displayArmyUpgradeInfo() {                                             //show user new upgrade available
-    if (armyLevel < armyUpgrades.length) {                                      //check for another upgrade available
-        var nextUpgrade = armyUpgrades[armyLevel];                              //assign next upgrade from array
+    if (userEmpire.armyLevel < armyUpgrades.length) {                                      //check for another upgrade available
+        var nextUpgrade = armyUpgrades[userEmpire.armyLevel];                              //assign next upgrade from array
         var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
         $("#upgradeArmyBtn").text(nextUpgrade.name);                            //give button name of next upgrade as text
         $("#armyUpgradeCost").text(costText);                                   //display cost of next upgrade to user
@@ -294,40 +320,40 @@ function newFollowerTimer() {                                                   
 }
 
 function newFollower() {                                                        //create new follower
-    currentPopulation++;                                                        //add new follower to population   
-    idleFollowers++;                                                            //new follower is idle until trained
-    $('#currentPopulation').text(currentPopulation);                            //show user new population status
+    userEmpire.currentPopulation++;                                                        //add new follower to population   
+    userEmpire.idleFollowers++;                                                            //new follower is idle until trained
+    $('#currentPopulation').text(userEmpire.currentPopulation);                            //show user new population status
     document.getElementById('gameText').innerHTML = "A new follower has found their way to "               //add game text to tell user new follower joined
-    + empireName + "!<br /><br />" + document.getElementById('gameText').innerHTML;
+    + userEmpire.name + "!<br /><br />" + document.getElementById('gameText').innerHTML;
     newFollowerCountdown = 0;                                                   //set countdown to 0 to reset process
 }
 
 function trainWarrior() {                                                       //idle follower trains to become warrior
-    warriors++;                                                                 //add 1 to warrior count
-    if (warriors == 1) {                                                        //explain what warriors do for your empire
+    userEmpire.warriors++;                                                                 //add 1 to warrior count
+    if (userEmpire.warriors == 1) {                                                        //explain what warriors do for your empire
         document.getElementById('gameText').innerHTML = "Warriors provide much more protection for " +
         "the empire while consuming more food than workers.<br /><br />"
         + document.getElementById('gameText').innerHTML; 
     }
-    $("#warriorCount").text(warriors);                                          //update warrior count to user
-    idleFollowers--;                                                            //remove an idle follower
-    $("#newFollowerCount").text(idleFollowers);                                 //update new follower count to user
-    hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
+    $("#warriorCount").text(userEmpire.warriors);                                          //update warrior count to user
+    userEmpire.idleFollowers--;                                                            //remove an idle follower
+    $("#newFollowerCount").text(userEmpire.idleFollowers);                                 //update new follower count to user
+    hideOrShowuserEmpire.idleFollowers();                                                  //decide if idle follower row should be hidden
 }
 
 function trainWorker() {                                                        //idle follower trains to become worker
-    workers++;                                                                  //add 1 to worker count
-    $("#workerCount").text(workers);                                            //update worker count to user
-    idleFollowers--;                                                            //remove an idle follower
-    $("#newFollowerCount").text(idleFollowers);                                 //update new follower count to user
-    hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
+    userEmpire.workers++;                                                                  //add 1 to worker count
+    $("#workerCount").text(userEmpire.workers);                                            //update worker count to user
+    userEmpire.idleFollowers--;                                                            //remove an idle follower
+    $("#newFollowerCount").text(userEmpire.idleFollowers);                                 //update new follower count to user
+    hideOrShowuserEmpire.idleFollowers();                                                  //decide if idle follower row should be hidden
 }
 
 function hideOrShowIdleFollowers() {                                            //decide if idle follower row should be hidden
-    if (idleFollowers > 0) {                                                    //if there are idle followers --> show row
-        $("#newFollowerCount").text(idleFollowers);
+    if (userEmpire.idleFollowers > 0) {                                                    //if there are idle followers --> show row
+        $("#newFollowerCount").text(userEmpire.idleFollowers);
         $(".newFollowersRow").show();
-        if (armyLevel > 0) {                                                    //if army level > 0, allow training of warriors
+        if (userEmpire.armyLevel > 0) {                                                    //if army level > 0, allow training of warriors
             $("#followerBecomesWarrior").show();
         }
         else {                                                                  //if army level = 0, can't train warriors
@@ -345,7 +371,7 @@ function hideOrShowIdleFollowers() {                                            
 
 window.setInterval(function(){                                                  //timer that acts as the game engine
     advanceTime();                                                              //timer clicks every second
-    if (currentPopulation < maxPopulation && newFollowerCountdown == 0) {       //determine if empire has space for new follower
+    if (userEmpire.currentPopulation < userEmpire.maxPopulation && newFollowerCountdown == 0) {       //determine if empire has space for new follower
         newFollowerTimer();                                                     //set timer for new follower to join
     }
     if (timeTick == newFollowerCountdown) {                                     //check if it is time to add new follower
@@ -388,7 +414,7 @@ function advanceTime() {
         document.getElementById('gameText').innerHTML = "The sound of a ferocious and massive dragon " 
         + "can be heard off in the distance.<br /><br />" + document.getElementById('gameText').innerHTML; 
     }
-    if (timeTick == 15 && huts == 0) {                                          //aid player into getting started
+    if (timeTick == 15 && userEmpire.huts == 0) {                                          //aid player into getting started
         document.getElementById('gameText').innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
         + document.getElementById('gameText').innerHTML;
     }
@@ -426,7 +452,7 @@ function save() {                                                               
         maxStoneCapacity: maxStoneCapacity,
         maxGoldCapacity: maxGoldCapacity,
         armyLevel: armyLevel,
-        huts: huts,
+        userEmpireHuts: userEmpire.huts,
         hutCost: hutCost,
         newFollowerCountdown: newFollowerCountdown
     }
@@ -437,26 +463,26 @@ function load() {                                                               
     var savedGame = JSON.parse(localStorage.getItem("savedEmpire"));            //change JSON to object
 
     if (savedGame !== null) {                                                   //check if there is a saved game in storage
-        if (typeof savedGame.food !== "undefined") food = savedGame.food;       //if so, set variables to values saved 
-        if (typeof savedGame.wood !== "undefined") wood = savedGame.wood;
-        if (typeof savedGame.stone !== "undefined") stone = savedGame.stone;
-        if (typeof savedGame.gold !== "undefined") gold = savedGame.gold
-        if (typeof savedGame.foodLevel !== "undefined") foodLevel = savedGame.foodLevel;
-        if (typeof savedGame.woodLevel !== "undefined") woodLevel = savedGame.woodLevel;
-        if (typeof savedGame.miningLevel !== "undefined") miningLevel = savedGame.miningLevel
-        if (typeof savedGame.armyLevel !== "undefined") armyLevel = savedGame.armyLevel;
-        if (typeof savedGame.maxFoodCapacity !== "undefined") maxFoodCapacity = savedGame.maxFoodCapacity;
-        if (typeof savedGame.maxWoodCapacity !== "undefined") maxWoodCapacity = savedGame.maxWoodCapacity;
-        if (typeof savedGame.maxStoneCapacity !== "undefined") maxStoneCapacity = savedGame.maxStoneCapacity;
-        if (typeof savedGame.maxGoldCapacity !== "undefined") maxGoldCapacity = savedGame.maxGoldCapacity;
-        if (typeof savedGame.huts !== "undefined") huts = savedGame.huts;
-        if (typeof savedGame.workers !== "undefined") workers = savedGame.workers
-        if (typeof savedGame.warriors !== "undefined") warriors = savedGame.warriors;
+        if (typeof savedGame.food !== "undefined") userEmpire.food = savedGame.food;       //if so, set variables to values saved 
+        if (typeof savedGame.wood !== "undefined") userEmpire.wood = savedGame.wood;
+        if (typeof savedGame.stone !== "undefined") userEmpire.stone = savedGame.stone;
+        if (typeof savedGame.gold !== "undefined") userEmpire.gold = savedGame.gold
+        if (typeof savedGame.foodLevel !== "undefined") userEmpire.foodLevel = savedGame.foodLevel;
+        if (typeof savedGame.woodLevel !== "undefined") userEmpire.woodLevel = savedGame.woodLevel;
+        if (typeof savedGame.miningLevel !== "undefined") userEmpire.miningLevel = savedGame.miningLevel
+        if (typeof savedGame.armyLevel !== "undefined") userEmpire.armyLevel = savedGame.armyLevel;
+        if (typeof savedGame.maxFoodCapacity !== "undefined") userEmpire.maxFoodCapacity = savedGame.maxFoodCapacity;
+        if (typeof savedGame.maxWoodCapacity !== "undefined") userEmpire.maxWoodCapacity = savedGame.maxWoodCapacity;
+        if (typeof savedGame.maxStoneCapacity !== "undefined") userEmpire.maxStoneCapacity = savedGame.maxStoneCapacity;
+        if (typeof savedGame.maxGoldCapacity !== "undefined") userEmpire.maxGoldCapacity = savedGame.maxGoldCapacity;
+        if (typeof savedGame.userEmpireHuts !== "undefined") userEmpire.huts = savedGame.userEmpireHuts;
+        if (typeof savedGame.workers !== "undefined") userEmpire.workers = savedGame.workers
+        if (typeof savedGame.warriors !== "undefined") userEmpire.warriors = savedGame.warriors;
         if (typeof savedGame.hutCost !== "undefined") hutCost = savedGame.hutCost;
-        if (typeof savedGame.empireName !== "undefined") empireName = savedGame.empireName;
+        if (typeof savedGame.empireName !== "undefined") userEmpire.name = savedGame.empireName;
         if (typeof savedGame.timeTick !== "undefined") timeTick = savedGame.timeTick;
-        if (typeof savedGame.currentPopulation !== "undefined") currentPopulation = savedGame.currentPopulation;
-        if (typeof savedGame.maxPopulation !== "undefined") maxPopulation = savedGame.maxPopulation;
+        if (typeof savedGame.currentPopulation !== "undefined") userEmpire.currentPopulation = savedGame.currentPopulation;
+        if (typeof savedGame.maxPopulation !== "undefined") userEmpire.maxPopulation = savedGame.maxPopulation;
         if (typeof savedGame.newFollowerCountdown !== "undefined") newFollowerCountdown = savedGame.newFollowerCountdown;
 
         updateDocumentElements();                                               //update document for user to see values
@@ -499,6 +525,7 @@ function load() {                                                               
     empire2.displayData();
     empire3 = new Empire("Babylon");
     empire3.displayData();
+    activateUpgradeButtons();
 }
 
 function restartGame() {                                                        //start a new game
@@ -512,20 +539,21 @@ $( document ).ready(function() {
 });
 
 function updateDocumentElements() {                                             //update document for user to see values
-    $("#currentPopulation").text(currentPopulation);
-    $("#maxPopulation").text(maxPopulation);
-    $("#empireName").text(empireName);
-    $("#foodCount").text(food);
-    $("#woodCount").text(wood);
-    $("#stoneCount").text(stone);
-    $("#goldCount").text(gold);
-    $("#hutCount").text(huts);
-    $("#hutCost").text(hutCost);
-    $("#warriorCount").text(warriors);
-    $("#workerCount").text(workers);
-    $("#woodLevel").text(woodLevel);
-    $("#armyLevel").text(armyLevel);
-    $("#miningLevel").text(miningLevel);
+    $("#currentPopulation").text(userEmpire.currentPopulation);
+    $("#maxPopulation").text(userEmpire.maxPopulation);
+    $("#empireName").text(userEmpire.name);
+    $("#foodCount").text(userEmpire.food);
+    $("#woodCount").text(userEmpire.wood);
+    $("#stoneCount").text(userEmpire.stone);
+    $("#goldCount").text(userEmpire.gold);
+    $("#hutCount").text(userEmpire.huts);
+    $("#hutCost").text(userEmpire.hutCost);
+    $("#warriorCount").text(userEmpire.warriors);
+    $("#workerCount").text(userEmpire.workers);
+    $("#foodLevel").text(userEmpire.foodLevel);
+    $("#woodLevel").text(userEmpire.woodLevel);
+    $("#armyLevel").text(userEmpire.armyLevel);
+    $("#miningLevel").text(userEmpire.miningLevel);
 }
 
 //#endregion
