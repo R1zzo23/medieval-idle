@@ -1,5 +1,4 @@
 //#region Variables
-//window.empireName;
 window.timeTick = 0;
 var userEmpire;
 var empire1;
@@ -7,37 +6,18 @@ var empire2;
 var empire3;
 var eatingTimer = 8;                                                                //everyone eats 3 times per day
 var nightFireTimer = 24;                                                            //all living spaces need fire at night
-//var food = 0;
 var foodCooldown = 5;
 var foodTimer = 0;
-//var foodLevel = 0;
 var foodEmoji = "&#129385;";
-//var maxFoodCapacity = 100;
-//window.wood = 0;
 var woodCooldown = 5;
 var woodTimer = 0;
-//var woodLevel = 0;
 var woodEmoji = "&#129717;";
-//var maxWoodCapacity = 100;
-//var miningLevel = 0;
-//var stone = 0;
 var stoneTimer = 0;
 var stoneCooldown = 5;
 var stoneEmoji = "&#129704;";
-//var maxStoneCapacity = 0;
-//var gold = 0;
 var goldTimer = 0;
 var goldCooldown = 5;
 var goldEmoji = "";
-//var maxGoldCapacity = 0;
-//var userEmpire.huts = 0;
-//var armyLevel = 0;
-//var hutCost = 10;
-//var currentPopulation = 0;
-//var maxPopulation = 0;
-//var userEmpire.idleFollowers = 0;
-//var warriors = 0;
-//var workers = 0;
 var newFollowerCountdown = 0;
 var gameText = document.getElementById('gameText');
 var foodUpgrades = [
@@ -463,6 +443,12 @@ function advanceTime() {
 
 //#endregion
 
+function displayOtherEmpiresInfo() {
+    $('#empire1Name').text(empire1.name);
+    $('#empire2Name').text(empire2.name);
+    $('#empire3Name').text(empire3.name);
+}
+
 //#region Save - Load - Restart
 
 function save() {                                                               //save game into local storage
@@ -558,6 +544,7 @@ function load() {                                                               
     empire3 = new Empire("Babylon");
     activateUpgradeButtons();
     displayResourceMaximums();
+    displayOtherEmpiresInfo();
 }
 
 function restartGame() {                                                        //start a new game
