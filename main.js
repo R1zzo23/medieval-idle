@@ -141,7 +141,7 @@ function buyHut(){
     if (userEmpire.huts == 0) 
         userEmpire.hutCost = 10;                                                           //first hut cost 10 wood
     else 
-    userEmpire.hutCost = Math.floor(25 * Math.pow(1.1,userEmpire.huts));                          //works out the cost of this hut
+        userEmpire.hutCost = Math.floor(25 * Math.pow(1.1,userEmpire.huts));                          //works out the cost of this hut
     if(userEmpire.wood >= userEmpire.hutCost){                                                        //checks that the player can afford the hut
         userEmpire.huts++;                                                                 //increases number of userEmpire.huts
         if (userEmpire.huts == 1) {                                                        //explain what userEmpire.huts do for your empire
@@ -153,10 +153,10 @@ function buyHut(){
         $('#hutCount').text(userEmpire.huts);                                              //updates the number of userEmpire.huts for the user
         $('#woodCount').text(userEmpire.wood);                                             //updates the number of wood for the user
         $('#maxPopulation').text(userEmpire.maxPopulation);                                //update maxPopulation for user
-        canAffordNextHut();
     };
     var nextCost = Math.floor(25 * Math.pow(1.1,userEmpire.huts));                         //works out the cost of the next hut
     $('#hutCost').text(nextCost);                                               //updates the hut cost for the user
+    userEmpire.hutCost = nextCost;
     canAffordNextHut();
 }
 
@@ -427,7 +427,7 @@ function advanceTime() {
         + "can be heard off in the distance.<br /><br />" + document.getElementById('gameText').innerHTML; 
     }
     if (timeTick == 15 && userEmpire.huts == 0) {                                          //aid player into getting started
-        document.getElementById('gameText').innerHTML = "An emporer can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
+        document.getElementById('gameText').innerHTML = "An emperor can't run the empire alone. Chop some wood and build a hut!<br /><br />" 
         + document.getElementById('gameText').innerHTML;
     }
     if (foodTimer > 0) $("#foodClickBtn").prop('disabled', true);               //disable food button if not cooled down
