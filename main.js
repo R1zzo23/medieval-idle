@@ -102,6 +102,7 @@ function woodClick() {
 
 function stoneClick() {
     userEmpire.stone += 100;
+    if (userEmpire.stone > userEmpire.maxStoneCapacity) userEmpire.stone = userEmpire.maxStoneCapacity;                         //cannot exceed capacity
     //userEmpire.stone += Math.round(userEmpire.workers / 3);
     $('#stoneCount').text(userEmpire.stone);
     $('#stoneClickBtn').prop('disabled', true);                                 //disable button until cooldown
@@ -109,7 +110,8 @@ function stoneClick() {
 
 function goldClick() {
     userEmpire.gold += 100;
-    userEmpire.gold += Math.round(userEmpire.workers / 5);
+    //userEmpire.gold += Math.round(userEmpire.workers / 5);
+    if (userEmpire.gold > userEmpire.maxGoldCapacity) userEmpire.gold = userEmpire.maxGoldCapacity;                         //cannot exceed capacity
     $('#goldCount').text(userEmpire.gold);
     $('#goldClickBtn').prop('disabled', true);                                  //disable button until cooldown
 }
@@ -165,6 +167,11 @@ function purchaseUpgrade(nextUpgrade) {                                         
     userEmpire.wood -= nextUpgrade.woodCost;
     userEmpire.stone -= nextUpgrade.stoneCost;
     userEmpire.gold -= nextUpgrade.goldCost;
+    $('#foodCount').text(userEmpire.food); 
+    $('#woodCount').text(userEmpire.wood); 
+    $('#stoneCount').text(userEmpire.stone); 
+    $('#golddCount').text(userEmpire.gold);
+    activateUpgradeButtons();
 }
 
 function displayNextUpgradeCost(nextUpgrade) {                                  //shows user cost for upgrades
@@ -181,16 +188,27 @@ function displayNextUpgradeCost(nextUpgrade) {                                  
     return costText;
 }
 
+function displayResourceMaximums() {
+    console.log(userEmpire.maxFoodCapacity);
+    $('#maxFood').text(userEmpire.maxFoodCapacity);
+    $('#maxWood').text(userEmpire.maxWoodCapacity);
+    $('#maxStone').text(userEmpire.maxStoneCapacity);
+    $('#maxGold').text(userEmpire.maxGoldCapacity);
+}
+
 function upgradeFood() {                                                        //lumber upgrade
     var nextUpgrade = foodUpgrades[userEmpire.foodLevel];                                  //determine what the next upgrade is in array
+    console.log("nextUpgrade.maxFoodCapacity: " + nextUpgrade.maxFoodCapacity);
+    console.log(nextUpgrade);
     if (userEmpire.food >= nextUpgrade.foodCost && userEmpire.wood >= nextUpgrade.woodCost &&         //make sure user has all needed resources
     userEmpire.stone >= nextUpgrade.stoneCost && userEmpire.gold >= nextUpgrade.goldCost) {
         userEmpire.foodLevel++;                                                            //increase woodLevel after upgrade
+        userEmpire.maxFoodCapacity = nextUpgrade.maxFoodCapacity;                              //update max capacity for this resource
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
         $("#foodLevel").text(userEmpire.foodLevel);                                        //update wood level to user
         displayFoodUpgradeInfo();                                               //show user new upgrade available
-        userEmpire.maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
-
+        console.log(userEmpire.maxFoodCapacity);
+        displayResourceMaximums();
     }
 }
 
@@ -246,7 +264,8 @@ function upgradeWood() {                                                        
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
         $("#woodLevel").text(userEmpire.woodLevel);                                        //update wood level to user
         displayLumberUpgradeInfo();                                             //show user new upgrade available
-        userEmpire.maxWoodCapacity = nextUpgrade.maxCapacity                               //update max capacity for this resource
+        userEmpire.maxWoodCapacity = nextUpgrade.maxWoodCapacity;                               //update max capacity for this resource
+        displayResourceMaximums();
     }
 }
 
@@ -272,7 +291,9 @@ function upgradeMining() {                                                      
         purchaseUpgrade(nextUpgrade);                                           //complete purchase
         $("#miningLevel").text(userEmpire.miningLevel);                                    //update mining level to user
         displayMiningUpgradeInfo();                                             //show user new upgrade available
-        userEmpire.maxFoodCapacity = nextUpgrade.maxCapacity;                              //update max capacity for this resource
+        userEmpire.maxStoneCapacity = nextUpgrade.maxStoneCapacity;                              //update max capacity for this resource
+        userEmpire.maxGoldCapacity = nextUpgrade.maxGoldCapacity;
+        displayResourceMaximums();
     }
 }
 
@@ -536,6 +557,7 @@ function load() {                                                               
     empire2 = new Empire("Revere");
     empire3 = new Empire("Babylon");
     activateUpgradeButtons();
+    displayResourceMaximums();
 }
 
 function restartGame() {                                                        //start a new game

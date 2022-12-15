@@ -5,10 +5,10 @@ class Building {
         this.woodCost = woodCost;
         this.stoneCost = stoneCost;
         this.goldCost = goldCost;
-        this.maxFoodCapacity = this.maxFoodCapacity;
-        this.maxWoodCapacity = this.maxWoodCapacity;
-        this.maxStoneCapacity = this.maxStoneCapacity;
-        this.maxGoldCapacity = this.maxGoldCapacity;
+        this.maxFoodCapacity = maxFoodCapacity;
+        this.maxWoodCapacity = maxWoodCapacity;
+        this.maxStoneCapacity = maxStoneCapacity;
+        this.maxGoldCapacity = maxGoldCapacity;
         this.addPopulation = addPopulation;
         
         this.purchaseBuilding = (empire) => {
