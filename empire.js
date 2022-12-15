@@ -12,8 +12,8 @@ class Empire {
         this.currentPopulation = 0;
         this.maxPopulation = 0;
         this.idleFollowers = 0;
-        this.warriorCount = 0;
-        this.workerCount = 0;
+        this.warriors = 0;
+        this.workers = 0;
         this.huts = 0;
         this.maxFoodCapacity = 100;
         this.maxWoodCapacity = 100;

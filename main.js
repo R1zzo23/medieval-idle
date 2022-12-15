@@ -32,7 +32,7 @@ var goldEmoji = "";
 //var maxGoldCapacity = 0;
 //var userEmpire.huts = 0;
 //var armyLevel = 0;
-//var hutCost = 10;
+var hutCost = 10;
 //var currentPopulation = 0;
 //var maxPopulation = 0;
 //var userEmpire.idleFollowers = 0;
@@ -46,7 +46,7 @@ var foodUpgrades = [
     level3 = new Building("Large Silo", 300, 125, 60, 0, 650, 0, 0, 0, 0) 
 ];
 var lumberUpgrades = [
-    level1 = new Building("Lumber Camp", 100, 200, 0, 0, 0, 250, 0, 0, 0),
+    level1 = new Building("Lumber Camp", 100, 75, 0, 0, 0, 250, 0, 0, 0),
     level2 = new Building("Lumber Mill", 250, 250, 50, 0, 0, 400, 0, 0, 0)
 ];
 var armyUpgrades = [
@@ -97,6 +97,7 @@ function woodClick() {
     if (userEmpire.wood > userEmpire.maxWoodCapacity) userEmpire.wood = userEmpire.maxWoodCapacity;                         //cannot exceed capacity
     $('#woodClickBtn').prop('disabled', true);                                  //disable button until cooldown
     $('#woodCount').text(userEmpire.wood);                                                 //dupdate amount of wood to user
+    canAffordNextHut();
 }
 
 function stoneClick() {
@@ -142,7 +143,7 @@ function buyHut(){
     if(userEmpire.wood >= hutCost){                                                        //checks that the player can afford the hut
         userEmpire.huts++;                                                                 //increases number of userEmpire.huts
         if (userEmpire.huts == 1) {                                                        //explain what userEmpire.huts do for your empire
-            document.getElementById('gameText').innerHTML = "userEmpire.huts will attract people to your empire and give them a place to call home.<br /><br />"
+            document.getElementById('gameText').innerHTML = "Huts will attract people to your empire and give them a place to call home.<br /><br />"
             + document.getElementById('gameText').innerHTML; 
         }
         userEmpire.maxPopulation += 3;                                                     //increase population limit
@@ -150,9 +151,11 @@ function buyHut(){
         $('#hutCount').text(userEmpire.huts);                                              //updates the number of userEmpire.huts for the user
         $('#woodCount').text(userEmpire.wood);                                             //updates the number of wood for the user
         $('#maxPopulation').text(userEmpire.maxPopulation);                                //update maxPopulation for user
+        canAffordNextHut();
     };
     var nextCost = Math.floor(25 * Math.pow(1.1,userEmpire.huts));                         //works out the cost of the next hut
     $('#hutCost').text(nextCost);                                               //updates the hut cost for the user
+    canAffordNextHut();
 }
 
 function purchaseUpgrade(nextUpgrade) {                                         //removes resources after buying upgrade
@@ -202,6 +205,13 @@ function activateUpgradeButtons() {
     if (canAffordUpgrade(armyUpgrades[userEmpire.armyLevel]))
         $("#upgradeArmyBtn").prop('disabled', false);
     else $("#upgradeArmyBtn").prop('disabled', true);
+    canAffordNextHut();
+}
+
+function canAffordNextHut() {
+    if (userEmpire.wood >= hutCost)
+        $('#buyHutBtn').prop('disabled', false);
+    else $('#buyHutBtn').prop('disabled', true);
 }
 
 function canAffordUpgrade(nextUpgrade) {
@@ -273,7 +283,7 @@ function upgradeMining() {                                                      
 }
 
 function displayMiningUpgradeInfo() {                                           //show user new upgrade available
-    if (miningLevel < miningUpgrades.length) {                                  //check for another upgrade available
+    if (userEmpire.miningLevel < miningUpgrades.length) {                                  //check for another upgrade available
         var nextUpgrade = miningUpgrades[userEmpire.miningLevel];                          //assign next upgrade from array
         var costText = displayNextUpgradeCost(nextUpgrade);                     //determine cost of next upgrade
         $("#upgradeMiningBtn").text(nextUpgrade.name);                          //give button name of next upgrade as text
@@ -338,7 +348,7 @@ function trainWarrior() {                                                       
     $("#warriorCount").text(userEmpire.warriors);                                          //update warrior count to user
     userEmpire.idleFollowers--;                                                            //remove an idle follower
     $("#newFollowerCount").text(userEmpire.idleFollowers);                                 //update new follower count to user
-    hideOrShowuserEmpire.idleFollowers();                                                  //decide if idle follower row should be hidden
+    hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
 }
 
 function trainWorker() {                                                        //idle follower trains to become worker
@@ -346,7 +356,7 @@ function trainWorker() {                                                        
     $("#workerCount").text(userEmpire.workers);                                            //update worker count to user
     userEmpire.idleFollowers--;                                                            //remove an idle follower
     $("#newFollowerCount").text(userEmpire.idleFollowers);                                 //update new follower count to user
-    hideOrShowuserEmpire.idleFollowers();                                                  //decide if idle follower row should be hidden
+    hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
 }
 
 function hideOrShowIdleFollowers() {                                            //decide if idle follower row should be hidden
