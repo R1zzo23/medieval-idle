@@ -140,6 +140,7 @@ function buyHut(){
     $('#hutCost').text(nextCost);                                               //updates the hut cost for the user
     userEmpire.hutCost = nextCost;
     canAffordNextHut();
+    activateUpgradeButtons();
 }
 
 function purchaseUpgrade(nextUpgrade) {                                         //removes resources after buying upgrade
@@ -352,6 +353,8 @@ function trainWarrior() {                                                       
     userEmpire.idleFollowers--;                                                            //remove an idle follower
     $("#newFollowerCount").text(userEmpire.idleFollowers);                                 //update new follower count to user
     hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
+    var warrior = new Person(personType.Warrior);
+    warrior.knowYourRole();
 }
 
 function trainWorker() {                                                        //idle follower trains to become worker
@@ -360,6 +363,10 @@ function trainWorker() {                                                        
     userEmpire.idleFollowers--;                                                            //remove an idle follower
     $("#newFollowerCount").text(userEmpire.idleFollowers);                                 //update new follower count to user
     hideOrShowIdleFollowers();                                                  //decide if idle follower row should be hidden
+    var worker = new Person(personType.Worker);
+    var _food = Math.floor(worker.foodCost * Math.pow(1.13, userEmpire.workers));
+    var _wood = Math.floor(worker.woodCost * Math.pow(1.1, userEmpire.workers));
+    worker.knowYourRole(_food, _wood, worker.stoneCost, worker.goldCost);
 }
 
 function hideOrShowIdleFollowers() {                                            //decide if idle follower row should be hidden
