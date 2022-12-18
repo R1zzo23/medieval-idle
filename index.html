@@ -97,12 +97,20 @@
 				</div>
 				<div class="col-sm">
 					<div class="row newFollowersRow">
-						<p>New Followers: <span id="newFollowerCount">0</span></p>
-					</div>
-					<div class="row newFollowersRow">
-						<button id="followerBecomesWarrior" onclick="trainWarrior()">Train Warrior</button>
-						<br />
-						<button id="followerBecomesWorker" onclick="trainWorker()">Train Worker</button>
+						<table>
+							<tr>
+								<td>New Followers:</td>
+								<td id="newfollowerCount">0</td>
+							</tr>
+							<tr>
+								<td><button id="followerBecomesWarrior" onclick="trainWarrior()">Train Warrior</button></td>
+								<td id="nextWarriorCost">next warrior cost</td>
+							</tr>
+							<tr>
+								<td><button id="followerBecomesWorker" onclick="trainWorker()">Train Worker</button></td>
+								<td id="nextWorkerCost">next worker cost</td>
+							</tr>
+						</table>
 					</div>
 				</div>
 				<div class="col-sm scrollable">

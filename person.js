@@ -14,10 +14,10 @@ class Person {
         }
 
         else if (this.type == "Warrior") {
-            this.foodCost = 25;
+            this.foodCost = 15;
             this.woodCost = 0;
-            this.stoneCost = 3;
-            this.goldCost = 1;
+            this.stoneCost = 1;
+            this.goldCost = 3;
         }
 
         this.knowYourRole = (food, wood, stone, gold) => {
