@@ -283,6 +283,23 @@ function activateUpgradeButtons() {
         $("#upgradeArmyBtn").prop('disabled', false);
     else $("#upgradeArmyBtn").prop('disabled', true);
     canAffordNextHut();
+    canAffordNextWarrior();
+    canAffordNextWorker();
+}
+
+function canAffordNextWorker() {
+    if (userEmpire.food < nextWorker.foodCost || userEmpire.wood < nextWorker.woodCost) {
+        $('#trainWorkerBtn').prop('disabled', true);
+    }
+    else $('#trainWorkerBtn').prop('disabled', false);
+}
+
+function canAffordNextWarrior() {
+    if (userEmpire.food < nextWarrior.foodCost || userEmpire.stone < nextWorker.stoneCost || 
+        userEmpire.gold < nextWarrior.goldCost) {
+        $('#trainWarriorBtn').prop('disabled', true);
+    }
+    else $('#trainWarriorBtn').prop('disabled', false);
 }
 
 function canAffordNextHut() {
@@ -505,6 +522,7 @@ function trainWarrior() {
     console.log("idleFollowers = " + userEmpire.idleFollowers);
     //update new follower count to user
     $('#newFollowerCount').text(userEmpire.idleFollowers);
+    payForTrainingNewFollower(nextWarrior);
     //decide if idle follower row should be hidden
     hideOrShowIdleFollowers();
     nextWarrior.foodCost = Math.floor(defaultWarrior.foodCost * Math.pow(1.15, userEmpire.warriors));
@@ -526,13 +544,22 @@ function trainWorker() {
     console.log("idleFollowers = " + userEmpire.idleFollowers);
     //update new follower count to user
     $("#newFollowerCount").text(userEmpire.idleFollowers);
+    payForTrainingNewFollower(nextWorker);
     //decide if idle follower row should be hidden
-    hideOrShowIdleFollowers();
     nextWorker.foodCost = Math.floor(defaultWorker.foodCost * Math.pow(1.15, userEmpire.workers));
     nextWorker.woodCost = Math.floor(defaultWorker.woodCost * Math.pow(1.1, userEmpire.workers));
     nextWorker.stoneCost = Math.floor(defaultWorker.stoneCost * Math.pow(1.1, userEmpire.workers));
     nextWorker.goldCost = Math.floor(defaultWorker.goldCost * Math.pow(1.1, userEmpire.workers));
     $('#nextWorkerCost').text(nextWorker.foodCost + " food | " + nextWorker.woodCost + " wood");
+    hideOrShowIdleFollowers();
+}
+
+function payForTrainingNewFollower(newPerson) {
+    userEmpire.food -= newPerson.foodCost;
+    userEmpire.wood -= newPerson.woodCost;
+    userEmpire.stone -= newPerson.stoneCost;
+    userEmpire.gold -= newPerson.goldCost;
+    updateDocumentElements();
 }
 
 //decide if idle follower row should be hidden
@@ -549,6 +576,9 @@ function hideOrShowIdleFollowers() {
         else {
             $("#followerBecomesWarrior").hide();
         }
+        $('#nextWorkerCost').text(nextWorker.foodCost + " food | " + nextWorker.woodCost + " wood");
+        $('#nextWarriorCost').text(nextWarrior.foodCost + " food | "
+        + nextWarrior.stoneCost + " stone | " + nextWarrior.goldCost + " gold");
     }
     else {
         //no idle followers --> hide row
@@ -791,6 +821,8 @@ function updateDocumentElements() {
     $("#woodLevel").text(userEmpire.woodLevel);
     $("#armyLevel").text(userEmpire.armyLevel);
     $("#miningLevel").text(userEmpire.miningLevel);
+    canAffordNextWarrior();
+    canAffordNextWorker();
 }
 
 //#endregion
