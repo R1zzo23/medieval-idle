@@ -21,6 +21,8 @@ var stoneEmoji = "&#129704;";
 var goldTimer = 0;
 var goldCooldown = 5;
 var goldEmoji = "";
+var randomEncounterTimer = -1;
+var newDiscoveryEncounter = new RandomEncounter("Discovery");
 var newFollowerCountdown = 0;
 var gameText = document.getElementById('gameText');
 var defaultWorker = new Person("Worker");
@@ -49,7 +51,7 @@ var miningUpgrades = [
 
 //#region Resource Clicks
 
-//clicked on resrouce button
+//clicked on resource button
 function manualClick(resource) {
     //food click
     if (resource == "food") {
@@ -537,6 +539,10 @@ function trainWarrior() {
 function trainWorker() {
     //add 1 to worker count
     userEmpire.workers++;
+    //being randomEncounter timer now that there are workers
+    if (userEmpire.workers == 1) {
+        randomEncounterTimer = 10;
+    }
     //update worker count to user
     $("#workerCount").text(userEmpire.workers);
     //remove an idle follower
@@ -588,6 +594,17 @@ function hideOrShowIdleFollowers() {
 
 //#endregion
 
+function addResourcesFromDiscovery(discoveryEncounter) {
+    userEmpire.food += discoveryEncounter.foodDiscovery;
+    userEmpire.wood += discoveryEncounter.woodDiscovery;
+    userEmpire.stone += discoveryEncounter.stoneDiscovery;
+    userEmpire.gold += discoveryEncounter.goldDiscovery;
+    document.getElementById('gameText').innerHTML = discoveryEncounter.flavorText + "<br /><br />" 
+        + document.getElementById('gameText').innerHTML;
+    updateDocumentElements();
+
+}
+
 //#region Game Engine
 
 //timer that acts as the game engine
@@ -629,6 +646,8 @@ function advanceTime() {
     woodTimer--;
     stoneTimer--;
     goldTimer--;
+    randomEncounterTimer--;
+    console.log(randomEncounterTimer);
     //Intro flavor text
     if (timeTick == 4) {
         document.getElementById('gameText').innerHTML = "A new empire will be forged by their strong and " 
@@ -665,6 +684,12 @@ function advanceTime() {
     //disable gold button if not cooled down or don't have 1st mining upgrade
     if (goldTimer > 0 || userEmpire.miningLevel == 0) $("#goldClickBtn").prop('disabled', true);
     else $("#goldClickBtn").prop('disabled', false);
+    //create a randomEncounter when timer reaches 0
+    if (randomEncounterTimer == 0) {
+        newDiscoveryEncounter.discoveryEncounter();
+        addResourcesFromDiscovery(newDiscoveryEncounter);
+        randomEncounterTimer = 10;
+    }
 }
 
 //#endregion
